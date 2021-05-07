@@ -1,8 +1,6 @@
 all:
-	cd gnu-efi && $(MAKE)
-	cd gnu-efi && $(MAKE) bootloader
-	cd kernel && $(MAKE) kernel
-	cd kernel && $(MAKE) buildimg
+	$(MAKE) bootloader
+	$(MAKE) kernel
 
 EFIAPPPATH = gnu-efi/x86_64/bootloader
 EFIAPPFNAME = main.efi
@@ -10,29 +8,21 @@ EFIAPPFNAME = main.efi
 BINDIR = kernel/bin
 STATICSRCDIR = kernel/staticsrc
 
-.PHONY: rebuildkernel
-rebuildkernel:
-	cd kernel && $(MAKE) clean
-	cd kernel && $(MAKE) setup
-	cd kernel && $(MAKE) kernel
-	cd kernel && $(MAKE) buildimg
-
 .PHONY: kernel
 kernel:
+	-cd kernel && $(MAKE) setup
 	cd kernel && $(MAKE) kernel
 	cd kernel && $(MAKE) buildimg
 
 .PHONY: bootloader
 bootloader:
+	cd gnu-efi && $(MAKE)
 	cd gnu-efi && $(MAKE) bootloader
 
 .PHONY: rebuild
 rebuild: clean
-	cd kernel && $(MAKE) setup
-	cd gnu-efi && $(MAKE)
-	cd gnu-efi && $(MAKE) bootloader
-	cd kernel && $(MAKE) kernel
-	cd kernel && $(MAKE) buildimg
+	$(MAKE) bootloader
+	$(MAKE) kernel
 
 .PHONY: clean
 clean:
@@ -40,7 +30,7 @@ clean:
 	cd kernel && $(MAKE) clean
 
 .PHONY: createboot
-createboot: rebuildall
+createboot: rebuild
 	@rm -rf bootFiles/efi/boot
 	@mkdir -p bootFiles/efi/boot
 	@cp $(EFIAPPPATH)/$(EFIAPPFNAME) bootFiles/efi/boot/bootx64.efi
