@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include "../utils/acpi.h"
-#include "../paging/PageTableManager.h"
+#include "../memory/PageTableManager.h"
 #include "../renderer/basic_renderer.h"
 #include "../utils/cstr.h"
 

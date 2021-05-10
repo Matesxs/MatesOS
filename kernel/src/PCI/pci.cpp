@@ -10,7 +10,7 @@ namespace PCI
     uint64_t offset = function << 12;
     uint64_t functionAddress = deviceAddress + offset;
 
-    g_PageTableManager.MapMemory((void*)functionAddress, (void*)functionAddress);
+    memory::g_PageTableManager.MapMemory((void*)functionAddress, (void*)functionAddress);
 
     PCIDeviceheader *pciDeviceHeader = (PCIDeviceheader*)functionAddress;
 
@@ -52,7 +52,7 @@ namespace PCI
     uint64_t offset = device << 15;
     uint64_t deviceAddress = busAddress + offset;
 
-    g_PageTableManager.MapMemory((void*)deviceAddress, (void*)deviceAddress);
+    memory::g_PageTableManager.MapMemory((void*)deviceAddress, (void*)deviceAddress);
 
     PCIDeviceheader *pciDeviceHeader = (PCIDeviceheader*)deviceAddress;
 
@@ -70,7 +70,7 @@ namespace PCI
     uint64_t offset = bus << 20;
     uint64_t busAddress = baseAddress + offset;
 
-    g_PageTableManager.MapMemory((void*)busAddress, (void*)busAddress);
+    memory::g_PageTableManager.MapMemory((void*)busAddress, (void*)busAddress);
 
     PCIDeviceheader *pciDeviceHeader = (PCIDeviceheader*)busAddress;
 

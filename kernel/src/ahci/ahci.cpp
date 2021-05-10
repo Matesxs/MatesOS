@@ -1,9 +1,9 @@
 #include "ahci.h"
 #include "../renderer/basic_renderer.h"
 #include "../renderer/stat_logger.h"
-#include "../paging/PageTableManager.h"
+#include "../memory/PageTableManager.h"
 #include "../memory/heap.h"
-#include "../paging/PageFrameAllocator.h"
+#include "../memory/PageFrameAllocator.h"
 
 namespace AHCI
 {
@@ -72,12 +72,12 @@ namespace AHCI
   {
     StopCMD();
 
-    void *newBase = GlobalAllocator.RequestPage();
+    void *newBase = memory::GlobalAllocator.RequestPage();
     hbaPort->commandListBase = (uint32_t)(uint64_t)newBase;
     hbaPort->commandListBaseUpper = (uint32_t)((uint64_t)newBase >> 32);
     memset((void *)(hbaPort->commandListBase), 0, 1024);
 
-    void *fisBase = GlobalAllocator.RequestPage();
+    void *fisBase = memory::GlobalAllocator.RequestPage();
     hbaPort->fisBaseAddress = (uint32_t)(uint64_t)fisBase;
     hbaPort->fisBaseAddressUpper = (uint32_t)((uint64_t)fisBase >> 32);
     memset(fisBase, 0, 256);
@@ -88,7 +88,7 @@ namespace AHCI
     {
       cmdHeader[i].prdtLength = 8;
 
-      void *cmdTableAddress = GlobalAllocator.RequestPage();
+      void *cmdTableAddress = memory::GlobalAllocator.RequestPage();
       uint64_t address = (uint64_t)cmdTableAddress + (i << 8);
       cmdHeader[i].commandTableBaseAddress = (uint32_t)(uint64_t)address;
       cmdHeader[i].commandTableBaseAddressUpper = (uint32_t)((uint64_t)address >> 32);
@@ -193,7 +193,7 @@ namespace AHCI
 
     ABAR = (HBAMemory *)((PCI::PCIHeader0 *)pciBaseAddress)->BAR5;
 
-    g_PageTableManager.MapMemory(ABAR, ABAR);
+    memory::g_PageTableManager.MapMemory(ABAR, ABAR);
     ProbePorts();
 
     showSuccess("AHCI Driver initialized");
@@ -206,7 +206,7 @@ namespace AHCI
 
       port->Configure();
 
-      port->buffer = (uint8_t *)GlobalAllocator.RequestPage();
+      port->buffer = (uint8_t *)memory::GlobalAllocator.RequestPage();
       memset(port->buffer, 0, 0x1000);
 
       port->Read(0, 6, port->buffer);

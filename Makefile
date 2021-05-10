@@ -14,6 +14,11 @@ kernel:
 	cd kernel && $(MAKE) kernel
 	cd kernel && $(MAKE) buildimg
 
+.PHONY: rebuildkernel
+rebuildkernel:
+	cd kernel && $(MAKE) clean
+	$(MAKE) kernel
+
 .PHONY: bootloader
 bootloader:
 	cd gnu-efi && $(MAKE)

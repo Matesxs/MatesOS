@@ -13,30 +13,30 @@ void PrepareMemory(BootInfo *bootInfo)
 {
   uint64_t mMapEntries = bootInfo->mMapSize / bootInfo->mMapDescSize;
 
-  GlobalAllocator = PageFrameAllocator();
-  GlobalAllocator.ReadEFIMemoryMap(bootInfo->mMap, bootInfo->mMapSize, bootInfo->mMapDescSize);
+  memory::GlobalAllocator = memory::PageFrameAllocator();
+  memory::GlobalAllocator.ReadEFIMemoryMap(bootInfo->mMap, bootInfo->mMapSize, bootInfo->mMapDescSize);
 
   uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
   uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1;
 
-  GlobalAllocator.LockPages(&_KernelStart, kernelPages);
+  memory::GlobalAllocator.LockPages(&_KernelStart, kernelPages);
 
-  PageTable *PML4 = (PageTable *)GlobalAllocator.RequestPage();
+  memory::PageTable *PML4 = (memory::PageTable*)memory::GlobalAllocator.RequestPage();
   memset(PML4, 0, 0x1000);
 
-  g_PageTableManager = PageTableManager(PML4);
+  memory::g_PageTableManager = memory::PageTableManager(PML4);
 
   for (uint64_t t = 0; t < GetMemorySize(bootInfo->mMap, mMapEntries, bootInfo->mMapDescSize); t += 0x1000)
   {
-    g_PageTableManager.MapMemory((void *)t, (void *)t);
+    memory::g_PageTableManager.MapMemory((void *)t, (void *)t);
   }
 
   uint64_t fbBase = (uint64_t)bootInfo->framebuffer->BaseAddress;
   uint64_t fbSize = (uint64_t)bootInfo->framebuffer->BufferSize + 0x1000;
-  GlobalAllocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
+  memory::GlobalAllocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
   for (uint64_t t = fbBase; t < fbBase + fbSize; t += 4096)
   {
-    g_PageTableManager.MapMemory((void *)t, (void *)t);
+    memory::g_PageTableManager.MapMemory((void *)t, (void *)t);
   }
 
   asm("mov %0, %%cr3" : : "r"(PML4));
@@ -54,7 +54,7 @@ void SetIDTGate(void* handler, uint8_t entryOffset, uint8_t type_attr, uint8_t s
 void PrepareInterrupts()
 {
   idtr.Limit = 0x0fff;
-  void *newPage = GlobalAllocator.RequestPage();
+  void *newPage = memory::GlobalAllocator.RequestPage();
   if (newPage == NULL)
   {
     showFailed("Interrupts memory allocation failed");
@@ -119,7 +119,7 @@ void InitializeKernel(BootInfo *bootInfo)
   GlobalBasicRenderer.SetColor(BR_WHITE);
   showSuccess("Memory initialized");
 
-  uint64_t heapInitPages = InitializeHeap((void*)0x0000100000000000, 0x10);
+  uint64_t heapInitPages = memory::InitializeHeap((void*)0x0000100000000000, 0x10);
   if (heapInitPages == 0)
     showFailed("Heap initialization failed");
   else

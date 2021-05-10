@@ -1,6 +1,6 @@
 #include "performance.h"
 #include "cstr.h"
-#include "../paging/PageFrameAllocator.h"
+#include "../memory/PageFrameAllocator.h"
 
 void ShowStats(unsigned int x, unsigned int y)
 {
@@ -14,9 +14,9 @@ void ShowStats(unsigned int x, unsigned int y)
 
 void ShowRAM(unsigned int x, unsigned int y)
 {
-  uint64_t freeRam = GlobalAllocator.GetFreeRAM();
-  uint64_t usedRam = GlobalAllocator.GetUsedRAM();
-  uint64_t reservedRam = GlobalAllocator.GetReservedRAM();
+  uint64_t freeRam = memory::GlobalAllocator.GetFreeRAM();
+  uint64_t usedRam = memory::GlobalAllocator.GetUsedRAM();
+  uint64_t reservedRam = memory::GlobalAllocator.GetReservedRAM();
 
   GlobalBasicRenderer.SetCursor(x, y);
 

@@ -9,7 +9,7 @@ ASMC = nasm
 LD = ld
 
 CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -fno-exceptions
-ASMFLAGS = 
+ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
 STATICSRCDIR := staticsrc
