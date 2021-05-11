@@ -8,7 +8,7 @@ CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -fno-exceptions
+CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -fno-exceptions -Wall -fno-stack-protector -Iinclude -fno-use-cxa-atexit -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Wno-write-strings
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
@@ -26,8 +26,6 @@ OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 OBJS += $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%_asm.o, $(ASMSRC))
 DIRS = $(wildcard $(SRCDIR)/*)
 
-kernel: $(OBJS) link
-
 $(OBJDIR)/interrupts/interrupts.o: $(SRCDIR)/interrupts/interrupts.cpp
 	@ echo !======= COMPILING $^
 	@ mkdir -p $(@D)
@@ -42,6 +40,8 @@ $(OBJDIR)/%_asm.o: $(SRCDIR)/%.asm
 	@ echo !======= COMPILING $^
 	@ mkdir -p $(@D)
 	$(ASMC) $(ASMFLAGS) $^ -f elf64 -o $@
+
+kernel: $(OBJS) link
 
 link:
 	@ echo !======= LINKING $^

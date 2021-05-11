@@ -59,6 +59,25 @@ void showFailed(const char *message)
   GlobalBasicRenderer.SetCursor(tmpX, tmpY);
 }
 
+void showInfo(const char *message)
+{
+  uint32_t tmpColor = GlobalBasicRenderer.GetColor();
+  uint32_t tmpX = GlobalBasicRenderer.GetCursorX();
+  uint32_t tmpY = GlobalBasicRenderer.GetCursorY();
+
+  GlobalBasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
+
+  GlobalBasicRenderer.SetColor(BR_WHITE);
+  GlobalBasicRenderer.Print("[ * ] ");
+  GlobalBasicRenderer.Print(message);
+  GlobalBasicRenderer.NewLine();
+
+  GlobalBasicRenderer.SetColor(tmpColor);
+  statLoggingCursor.X = GlobalBasicRenderer.GetCursorX();
+  statLoggingCursor.Y = GlobalBasicRenderer.GetCursorY();
+  GlobalBasicRenderer.SetCursor(tmpX, tmpY);
+}
+
 void printStats(const char *message, uint32_t color)
 {
   uint32_t tmpColor = GlobalBasicRenderer.GetColor();

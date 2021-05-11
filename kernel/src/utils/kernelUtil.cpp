@@ -135,6 +135,9 @@ void InitializeKernel(BootInfo *bootInfo)
 
   PrepareACPI(bootInfo);
 
+  // Load all drivers
+  driver::g_DriverManager.activate_all();
+
   showSuccess("Kernel initialized successfully");
 
   GlobalBasicRenderer.NewLine();

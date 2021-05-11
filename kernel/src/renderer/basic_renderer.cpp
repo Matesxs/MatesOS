@@ -29,9 +29,8 @@ void BasicRenderer::ClearScreen(uint32_t _color)
 	uint64_t fbBase = (uint64_t)frameBuffer->BaseAddress;
 	uint64_t bytesPerScanline = frameBuffer->PixelsPerScanline * 4;
 	uint64_t fbHeight = frameBuffer->Height;
-	uint64_t fbSize = frameBuffer->BufferSize;
 
-	for (int vertScanLine = 0; vertScanLine < fbHeight; vertScanLine++)
+	for (uint64_t vertScanLine = 0; vertScanLine < fbHeight; vertScanLine++)
 	{
 		uint64_t pixPtrBase = fbBase + (bytesPerScanline * vertScanLine);
 		for (uint32_t *pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)(pixPtrBase + bytesPerScanline); pixPtr++)

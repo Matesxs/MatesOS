@@ -2,6 +2,7 @@
 #include "../ahci/ahci.h"
 #include "../memory/heap.h"
 #include "../renderer/stat_logger.h"
+#include "../utils/driver.h"
 
 namespace PCI
 {
@@ -38,7 +39,7 @@ namespace PCI
             switch (pciDeviceHeader->ProgIF)
             {
               case 0x01: // AHCI 1.0 device
-                new AHCI::AHCIDriver(pciDeviceHeader);
+                driver::g_DriverManager.add_driver(new AHCI::AHCIDriver(pciDeviceHeader));
                 break;
             }
             break;

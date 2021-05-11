@@ -4,6 +4,7 @@
 #include "../memory/PageTableManager.h"
 #include "../memory/heap.h"
 #include "../memory/PageFrameAllocator.h"
+#include "../utils/cstr.h"
 
 namespace AHCI
 {
@@ -43,8 +44,36 @@ namespace AHCI
     case SATA_SIG_SEMB:
       return PortType::SEMB;
     default:
-      PortType::None;
+      return PortType::None;
     }
+  }
+
+  void AHCIDriver::AddPort(AHCI::PortType portType, AHCI::HBAPort *port)
+  {
+    ports[portCount] = new Port();
+    ports[portCount]->portType = portType;
+    ports[portCount]->hbaPort = port;
+    ports[portCount]->portNumber = portCount;
+    portCount++;
+
+    printStats("   - Found ");
+    switch(portType)
+    {
+      case PortType::SATA:
+        printStats("SATA");
+        break;
+
+      case PortType::SATAPI:
+        printStats("SATAPI");
+        break;
+
+      default:
+        printStats("Unsupported");
+        break;
+    }
+
+    printStats(" device");
+    statNewLine();
   }
 
   void AHCIDriver::ProbePorts()
@@ -58,11 +87,7 @@ namespace AHCI
 
         if (portType == PortType::SATA || portType == PortType::SATAPI)
         {
-          ports[portCount] = new Port();
-          ports[portCount]->portType = portType;
-          ports[portCount]->hbaPort = &ABAR->ports[i];
-          ports[portCount]->portNumber = portCount;
-          portCount++;
+          AddPort(portType, &ABAR->ports[i]);
         }
       }
     }
@@ -192,15 +217,17 @@ namespace AHCI
     this->PCIBaseAddress = pciBaseAddress;
 
     ABAR = (HBAMemory *)((PCI::PCIHeader0 *)pciBaseAddress)->BAR5;
-
     memory::g_PageTableManager.MapMemory(ABAR, ABAR);
+  }
+
+  bool AHCIDriver::activate()
+  {
+    showInfo("Loading AHCI Driver");
+
     ProbePorts();
 
-    showSuccess("AHCI Driver initialized");
-
-    GlobalBasicRenderer.SetCursor(50, 350);
-    GlobalBasicRenderer.Print("Debug disc dump:\n");
-    for (int i = 0; i < portCount; i++)
+    GlobalBasicRenderer.SetCursor(50, 400);
+    for (uint8_t i = 0; i < portCount; i++)
     {
       Port *port = ports[i];
 
@@ -209,6 +236,9 @@ namespace AHCI
       port->buffer = (uint8_t *)memory::GlobalAllocator.RequestPage();
       memset(port->buffer, 0, 0x1000);
 
+      GlobalBasicRenderer.Print("\nDebug dump port ");
+      GlobalBasicRenderer.Print(to_string((uint64_t)i));
+      GlobalBasicRenderer.Print(":\n");
       port->Read(0, 6, port->buffer);
       for (int t = 0; t < 1024; t++)
       {
@@ -216,9 +246,25 @@ namespace AHCI
       }
       GlobalBasicRenderer.NewLine();
     }
+
+    showSuccess("AHCI Driver initialized");
+    printStats("   - Found ");
+    printStats(to_string((uint64_t)portCount));
+    printStats(" ports");
+    statNewLine();
+
+    return true;
   }
 
   AHCIDriver::~AHCIDriver()
   {
+    for (auto port : ports)
+    {
+      if (port->buffer != NULL)
+      {
+        memory::free(port->buffer);
+        port->buffer = NULL;
+      }
+    }
   }
 }

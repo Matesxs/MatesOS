@@ -15,7 +15,7 @@ namespace memory
   bool PageDirectoryEntry::GetFlag(PT_Flag flag)
   {
     uint64_t bitSelector = (uint64_t)1 << flag;
-    return Value & bitSelector > 0 ? true : false;
+    return (Value & bitSelector) > 0 ? true : false;
   }
 
   uint64_t PageDirectoryEntry::GetAddress()

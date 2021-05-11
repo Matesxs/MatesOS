@@ -165,3 +165,28 @@ namespace memory
     segment->CombineBackward();
   }
 }
+
+void *operator new(size_t n)
+{
+  return memory::malloc(n);
+}
+
+void *operator new(size_t n, void *p)
+{
+  return p;
+}
+
+void *operator new[](size_t s)
+{
+  return memory::malloc(s);
+}
+
+void operator delete(void *p)
+{
+  memory::free(p);
+}
+
+void operator delete[](void *p)
+{
+  memory::free(p);
+}

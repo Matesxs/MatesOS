@@ -9,8 +9,9 @@
 #include "../memory/paging.h"
 #include "../memory/PageTableManager.h"
 #include "../userinput/mouse.h"
-#include "acpi.h"
+#include "../acpi/acpi.h"
 #include "../PCI/pci.h"
+#include "driver.h"
 
 struct BootInfo
 {

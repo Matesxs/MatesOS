@@ -20,7 +20,7 @@ namespace memory
     void *largestFreeMemSeg = NULL;
     size_t largestFreeMemSegSize = 0;
 
-    for (int i = 0; i < mMapEntries; i++)
+    for (uint64_t i = 0; i < mMapEntries; i++)
     {
       EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
       if (desc->type == 7) // type = EfiConventionalMemory
@@ -40,7 +40,7 @@ namespace memory
     InitBitmap(bitmapSize, largestFreeMemSeg);
 
     ReservePages(0, memorySize / 4096 + 1);
-    for (int i = 0; i < mMapEntries; i++)
+    for (uint64_t i = 0; i < mMapEntries; i++)
     {
       EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
       if (desc->type == 7) // efiConventionalMemory
@@ -57,7 +57,7 @@ namespace memory
   {
     PageBitmap.Size = bitmapSize;
     PageBitmap.Buffer = (uint8_t *)bufferAddress;
-    for (int i = 0; i < bitmapSize; i++)
+    for (size_t i = 0; i < bitmapSize; i++)
     {
       *(uint8_t *)(PageBitmap.Buffer + i) = 0;
     }
@@ -94,7 +94,7 @@ namespace memory
 
   void PageFrameAllocator::FreePages(void *address, uint64_t pageCount)
   {
-    for (int t = 0; t < pageCount; t++)
+    for (uint64_t t = 0; t < pageCount; t++)
     {
       FreePage((void *)((uint64_t)address + (t * 4096)));
     }
@@ -115,7 +115,7 @@ namespace memory
 
   void PageFrameAllocator::LockPages(void *address, uint64_t pageCount)
   {
-    for (int t = 0; t < pageCount; t++)
+    for (uint64_t t = 0; t < pageCount; t++)
     {
       LockPage((void *)((uint64_t)address + (t * 4096)));
     }
@@ -137,7 +137,7 @@ namespace memory
 
   void PageFrameAllocator::UnreservePages(void *address, uint64_t pageCount)
   {
-    for (int t = 0; t < pageCount; t++)
+    for (uint64_t t = 0; t < pageCount; t++)
     {
       UnreservePage((void *)((uint64_t)address + (t * 4096)));
     }
@@ -157,7 +157,7 @@ namespace memory
 
   void PageFrameAllocator::ReservePages(void *address, uint64_t pageCount)
   {
-    for (int t = 0; t < pageCount; t++)
+    for (uint64_t t = 0; t < pageCount; t++)
     {
       ReservePage((void *)((uint64_t)address + (t * 4096)));
     }

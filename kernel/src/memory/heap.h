@@ -23,7 +23,8 @@ namespace memory
   void free(void *address);
 }
 
-inline void *operator new(size_t size) { return memory::malloc(size); }
-inline void *operator new[](size_t size) { return memory::malloc(size); }
-
-inline void operator delete(void *p) { memory::free(p); }
+void* operator new(size_t n);
+void* operator new(size_t n, void* p);
+void* operator new[](size_t s);
+void  operator delete(void *p);
+void  operator delete[](void *p);

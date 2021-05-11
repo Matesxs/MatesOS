@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include "../PCI/pci.h"
+#include "../utils/driver.h"
 
 namespace AHCI
 {
@@ -158,15 +159,18 @@ namespace AHCI
     bool Read(uint64_t sector, uint32_t sectorCount, void *buffer);
   };
 
-  class AHCIDriver
+  class AHCIDriver : public driver::Driver
   {
   public:
     AHCIDriver(PCI::PCIDeviceheader *pciBaseAddress);
     ~AHCIDriver();
     PCI::PCIDeviceheader *PCIBaseAddress;
     HBAMemory *ABAR;
-    void ProbePorts();
     Port *ports[32];
     uint8_t portCount;
+
+    void ProbePorts();
+    void AddPort(AHCI::PortType portType, AHCI::HBAPort *port);
+    virtual bool activate();
   };
 }

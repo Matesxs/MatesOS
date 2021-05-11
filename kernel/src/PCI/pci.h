@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "../utils/acpi.h"
+#include "../acpi/acpi.h"
 #include "../memory/PageTableManager.h"
 #include "../renderer/basic_renderer.h"
 #include "../utils/cstr.h"
