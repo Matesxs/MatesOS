@@ -12,7 +12,6 @@ CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -fno-exceptions -Wall -fno-s
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
-STATICSRCDIR := staticsrc
 SRCDIR := src
 OBJDIR := lib
 BUILDDIR = bin
@@ -63,4 +62,4 @@ buildimg:
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BOOTEFI) ::/EFI/BOOT
 	mcopy -i $(BUILDDIR)/$(OSNAME).img startup.nsh ::
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/kernel.elf ::
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(STATICSRCDIR)/fonts/zap-light16.psf ::
+	mcopy -i $(BUILDDIR)/$(OSNAME).img staticsrc/fonts/zap-light16.psf ::

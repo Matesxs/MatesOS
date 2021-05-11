@@ -8,6 +8,7 @@
 #include "../interrupts/IDT.h"
 #include "../interrupts/interrupts.h"
 #include "../renderer/stat_logger.h"
+#include "helpers.h"
 
 void PrepareMemory(BootInfo *bootInfo)
 {
@@ -58,7 +59,7 @@ void PrepareInterrupts()
   if (newPage == NULL)
   {
     showFailed("Interrupts memory allocation failed");
-    return;
+    halt();
   }
 
   idtr.Offset = (uint64_t)newPage;
@@ -85,10 +86,7 @@ void PrepareACPI(BootInfo *bootInfo)
     showFailed("SDT Header not found");
     return;
   }
-  else
-  {
-    showSuccess("SDT Header found");
-  }
+  else showSuccess("SDT Header found");
 
   ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader*)ACPI::FindTable(xsdt, (char*)"MCFG");
   if (mcfg == nullptr)
@@ -115,15 +113,15 @@ void InitializeKernel(BootInfo *bootInfo)
 
   PrepareMemory(bootInfo);
   GlobalBasicRenderer.ClearScreen();
-  GlobalBasicRenderer.SetCursor(50, 50);
-  GlobalBasicRenderer.SetColor(BR_WHITE);
   showSuccess("Memory initialized");
 
-  uint64_t heapInitPages = memory::InitializeHeap((void*)0x0000100000000000, 0x10);
+  uint64_t heapInitPages = memory::InitializeHeap((void*)0x0000100000000000, 0x100);
   if (heapInitPages == 0)
+  {
     showFailed("Heap initialization failed");
-  else
-    showSuccess("Heap initialized");
+    halt();
+  }
+  else showSuccess("Heap initialized");
 
   PrepareInterrupts();
 
@@ -139,9 +137,6 @@ void InitializeKernel(BootInfo *bootInfo)
   driver::g_DriverManager.activate_all();
 
   showSuccess("Kernel initialized successfully");
-
-  GlobalBasicRenderer.NewLine();
-  GlobalBasicRenderer.NewLine();
 
   asm ("sti");
 }

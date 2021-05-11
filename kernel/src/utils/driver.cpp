@@ -1,16 +1,15 @@
 #include <stddef.h>
 #include "driver.h"
 #include "../renderer/stat_logger.h"
+#include "../utils/helpers.h"
 
 namespace driver
 {
-  Driver::Driver()
-  {
-  }
+  DriverManager g_DriverManager = DriverManager();
 
-  Driver::~Driver()
-  {
-  }
+  Driver::Driver() {}
+
+  Driver::~Driver(){}
 
   bool Driver::activate()
   {
@@ -25,12 +24,22 @@ namespace driver
   void DriverManager::activate_all()
   {
     showInfo("Loading drivers");
+    bool failed = false;
+
     for (uint64_t i = 0; i < num_of_drivers; i++)
     {
       if (drivers[i] != NULL)
-        drivers[i]->activate();
+      {
+        if (!drivers[i]->activate()) failed = true;
+      }
     }
-    showSuccess("Drivers loaded");
+
+    if (failed)
+    {
+      showFailed("Drivers load failed");
+      halt();
+    }
+    else showSuccess("Drivers loaded");
   }
 
   void DriverManager::add_driver(Driver *driver)
@@ -44,10 +53,7 @@ namespace driver
 
   Driver *DriverManager::get_by_index(uint64_t index)
   {
-    if (index > (num_of_drivers - 1))
-      return NULL;
+    if (index > (num_of_drivers - 1)) return NULL;
     return drivers[index];
   }
-
-  DriverManager g_DriverManager = DriverManager();
 }

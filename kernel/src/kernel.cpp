@@ -3,6 +3,7 @@
 #include "memory/heap.h"
 #include "scheduling/pit/pit.h"
 #include "utils/performance.h"
+#include "utils/helpers.h"
 
 extern "C" void _start(BootInfo *bootInfo)
 {
@@ -10,8 +11,5 @@ extern "C" void _start(BootInfo *bootInfo)
 
   ShowStats(1700, 50);
 
-  while (true)
-  {
-    asm("hlt");
-  }
+  halt();
 }
