@@ -23,7 +23,6 @@ SRC = $(call rwildcard,$(SRCDIR),*.cpp)
 ASMSRC = $(call rwildcard,$(SRCDIR),*.asm)
 OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 OBJS += $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%_asm.o, $(ASMSRC))
-DIRS = $(wildcard $(SRCDIR)/*)
 
 $(OBJDIR)/interrupts/interrupts.o: $(SRCDIR)/interrupts/interrupts.cpp
 	@ echo !======= COMPILING $^

@@ -197,15 +197,15 @@ void ProcessMousePacket()
 
   mousePacketReady = false;
 
-  if (GlobalBasicRenderer.GetWidth() <= 0 && GlobalBasicRenderer.GetHeight() <= 0) return;
+  if (g_BasicRenderer.GetWidth() <= 0 && g_BasicRenderer.GetHeight() <= 0) return;
 
   if (MousePosition.X < 0) MousePosition.X = 0;
-  if (MousePosition.X > (long)GlobalBasicRenderer.GetWidth() - 1) MousePosition.X = (long)GlobalBasicRenderer.GetWidth() - 1;
+  if (MousePosition.X > (long)g_BasicRenderer.GetWidth() - 1) MousePosition.X = (long)g_BasicRenderer.GetWidth() - 1;
   if (MousePosition.Y < 0) MousePosition.Y = 0;
-  if (MousePosition.Y > (long)GlobalBasicRenderer.GetHeight() - 1) MousePosition.Y = (long)GlobalBasicRenderer.GetHeight() - 1;
+  if (MousePosition.Y > (long)g_BasicRenderer.GetHeight() - 1) MousePosition.Y = (long)g_BasicRenderer.GetHeight() - 1;
 
-  GlobalBasicRenderer.ClearMouseCursor(MousePointer, MousePositionOld);
-  GlobalBasicRenderer.DrawOverlayMouseCursor(MousePointer, MousePosition, __CURSOR_COLOR);
+  g_BasicRenderer.ClearMouseCursor(MousePointer, MousePositionOld);
+  g_BasicRenderer.DrawOverlayMouseCursor(MousePointer, MousePosition, __CURSOR_COLOR);
 
   if (mousePacket[0] & PS2LeftButton)
   {

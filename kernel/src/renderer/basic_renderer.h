@@ -13,6 +13,7 @@ class BasicRenderer
   public:
   BasicRenderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor);
   void SetFramebuffer(FrameBuffer *_frameBuffer);
+  FrameBuffer GetFramebuffer();
   void SetCursor(unsigned int x, unsigned int y);
   unsigned int GetCursorX();
   unsigned int GetCursorY();
@@ -47,4 +48,4 @@ class BasicRenderer
   PSF1_FONT *font;
 };
 
-extern BasicRenderer GlobalBasicRenderer;
+extern BasicRenderer g_BasicRenderer;

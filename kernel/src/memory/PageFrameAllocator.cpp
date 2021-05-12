@@ -2,11 +2,8 @@
 
 namespace memory
 {
-  uint64_t freeMemory;
-  uint64_t reservedMemory;
-  uint64_t usedMemory;
   bool Initialized = false;
-  PageFrameAllocator GlobalAllocator;
+  PageFrameAllocator g_Allocator;
 
   void PageFrameAllocator::ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR *mMap, size_t mMapSize, size_t mMapDescSize)
   {
@@ -23,7 +20,7 @@ namespace memory
     for (uint64_t i = 0; i < mMapEntries; i++)
     {
       EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
-      if (desc->type == 7) // type = EfiConventionalMemory
+      if (desc->type == 7)
       {
         if (desc->numPages * 4096 > largestFreeMemSegSize)
         {
@@ -33,17 +30,17 @@ namespace memory
       }
     }
 
-    uint64_t memorySize = GetMemorySize(mMap, mMapEntries, mMapDescSize);
-    freeMemory = memorySize;
-    uint64_t bitmapSize = memorySize / 4096 / 8 + 1;
+    totalMemory = GetMemorySize(mMap, mMapEntries, mMapDescSize);
+    freeMemory = totalMemory;
+    uint64_t bitmapSize = totalMemory / 4096 / 8 + 1;
 
     InitBitmap(bitmapSize, largestFreeMemSeg);
 
-    ReservePages(0, memorySize / 4096 + 1);
+    ReservePages(0, totalMemory / 4096 + 1);
     for (uint64_t i = 0; i < mMapEntries; i++)
     {
       EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
-      if (desc->type == 7) // efiConventionalMemory
+      if (desc->type == 7)
       {
         UnreservePages(desc->physAddr, desc->numPages);
       }
@@ -161,18 +158,5 @@ namespace memory
     {
       ReservePage((void *)((uint64_t)address + (t * 4096)));
     }
-  }
-
-  uint64_t PageFrameAllocator::GetFreeRAM()
-  {
-    return freeMemory;
-  }
-  uint64_t PageFrameAllocator::GetUsedRAM()
-  {
-    return usedMemory;
-  }
-  uint64_t PageFrameAllocator::GetReservedRAM()
-  {
-    return reservedMemory;
   }
 }

@@ -14,15 +14,15 @@ void PrepareMemory(BootInfo *bootInfo)
 {
   uint64_t mMapEntries = bootInfo->mMapSize / bootInfo->mMapDescSize;
 
-  memory::GlobalAllocator = memory::PageFrameAllocator();
-  memory::GlobalAllocator.ReadEFIMemoryMap(bootInfo->mMap, bootInfo->mMapSize, bootInfo->mMapDescSize);
+  memory::g_Allocator = memory::PageFrameAllocator();
+  memory::g_Allocator.ReadEFIMemoryMap(bootInfo->mMap, bootInfo->mMapSize, bootInfo->mMapDescSize);
 
   uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
   uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1;
 
-  memory::GlobalAllocator.LockPages(&_KernelStart, kernelPages);
+  memory::g_Allocator.LockPages(&_KernelStart, kernelPages);
 
-  memory::PageTable *PML4 = (memory::PageTable*)memory::GlobalAllocator.RequestPage();
+  memory::PageTable *PML4 = (memory::PageTable*)memory::g_Allocator.RequestPage();
   memset(PML4, 0, 0x1000);
 
   memory::g_PageTableManager = memory::PageTableManager(PML4);
@@ -34,7 +34,7 @@ void PrepareMemory(BootInfo *bootInfo)
 
   uint64_t fbBase = (uint64_t)bootInfo->framebuffer->BaseAddress;
   uint64_t fbSize = (uint64_t)bootInfo->framebuffer->BufferSize + 0x1000;
-  memory::GlobalAllocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
+  memory::g_Allocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
   for (uint64_t t = fbBase; t < fbBase + fbSize; t += 4096)
   {
     memory::g_PageTableManager.MapMemory((void *)t, (void *)t);
@@ -55,7 +55,7 @@ void SetIDTGate(void* handler, uint8_t entryOffset, uint8_t type_attr, uint8_t s
 void PrepareInterrupts()
 {
   idtr.Limit = 0x0fff;
-  void *newPage = memory::GlobalAllocator.RequestPage();
+  void *newPage = memory::g_Allocator.RequestPage();
   if (newPage == NULL)
   {
     showFailed("Interrupts memory allocation failed");
@@ -112,7 +112,7 @@ void InitializeKernel(BootInfo *bootInfo)
   LoadGDT(&gdtDescriptor);
 
   PrepareMemory(bootInfo);
-  GlobalBasicRenderer.ClearScreen();
+  g_BasicRenderer.ClearScreen();
   showSuccess("Memory initialized");
 
   uint64_t heapInitPages = memory::InitializeHeap((void*)0x0000100000000000, 0x100);

@@ -1,13 +1,13 @@
 #include "basic_renderer.h"
 
-BasicRenderer GlobalBasicRenderer(NULL, NULL, BR_BLACK, BR_BLACK);
+BasicRenderer g_BasicRenderer(NULL, NULL, BR_BLACK, BR_BLACK);
 
 void InitGlobalBasicRenderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor)
 {
-	 GlobalBasicRenderer.SetFramebuffer(_frameBuffer);
-	 GlobalBasicRenderer.SetFont(_font);
-	 GlobalBasicRenderer.SetColor(_frontColor);
-	 GlobalBasicRenderer.SetBackColor(_backColor);
+	 g_BasicRenderer.SetFramebuffer(_frameBuffer);
+	 g_BasicRenderer.SetFont(_font);
+	 g_BasicRenderer.SetColor(_frontColor);
+	 g_BasicRenderer.SetBackColor(_backColor);
 }
 
 BasicRenderer::BasicRenderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor) : frameBuffer(_frameBuffer),
@@ -179,6 +179,11 @@ void BasicRenderer::SetFramebuffer(FrameBuffer *_frameBuffer)
     return;
 
   frameBuffer = _frameBuffer;
+}
+
+FrameBuffer BasicRenderer::GetFramebuffer()
+{
+	return *frameBuffer;
 }
 
 void BasicRenderer::Print(const char *str)

@@ -9,7 +9,7 @@ extern "C" void _start(BootInfo *bootInfo)
 {
   InitializeKernel(bootInfo);
 
-  ShowStats(1700, 50);
+  ShowStats(1500, 50);
 
   halt();
 }

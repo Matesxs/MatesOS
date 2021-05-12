@@ -16,9 +16,11 @@ namespace memory
     void LockPage(void *address);
     void LockPages(void *address, uint64_t pageCount);
     void *RequestPage();
-    uint64_t GetFreeRAM();
-    uint64_t GetUsedRAM();
-    uint64_t GetReservedRAM();
+
+    inline uint64_t GetTotalMemory() { return totalMemory; };
+    inline uint64_t GetFreeMemory() { return freeMemory; };
+    inline uint64_t GetReservedMemory() { return reservedMemory; };
+    inline uint64_t GetUsedMemory() { return usedMemory; };
 
   private:
     void InitBitmap(size_t bitmapSize, void *bufferAddress);
@@ -26,7 +28,12 @@ namespace memory
     void ReservePages(void *address, uint64_t pageCount);
     void UnreservePage(void *address);
     void UnreservePages(void *address, uint64_t pageCount);
+
+    uint64_t totalMemory;
+    uint64_t freeMemory;
+    uint64_t reservedMemory;
+    uint64_t usedMemory;
   };
 
-  extern PageFrameAllocator GlobalAllocator;
+  extern PageFrameAllocator g_Allocator;
 }

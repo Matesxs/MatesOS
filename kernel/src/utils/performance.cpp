@@ -1,111 +1,177 @@
 #include "performance.h"
 #include "cstr.h"
 #include "../memory/PageFrameAllocator.h"
+#include "os_stats.h"
 
 void ShowStats(unsigned int x, unsigned int y)
 {
-  GlobalBasicRenderer.SetCursor(x, y);
-  GlobalBasicRenderer.SetColor(BR_WHITE);
-  GlobalBasicRenderer.Print("OS Stats:");
-  GlobalBasicRenderer.NewLine();
-  ShowRAM(GlobalBasicRenderer.GetCursorX(), GlobalBasicRenderer.GetCursorY());
-  GlobalBasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.SetCursor(x, y);
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("OS Stats:");
+  g_BasicRenderer.NewLine();
+  ShowRAM(g_BasicRenderer.GetCursorX(), g_BasicRenderer.GetCursorY());
+  g_BasicRenderer.SetColor(BR_WHITE);
 }
 
 void ShowRAM(unsigned int x, unsigned int y)
 {
-  uint64_t freeRam = memory::GlobalAllocator.GetFreeRAM();
-  uint64_t usedRam = memory::GlobalAllocator.GetUsedRAM();
-  uint64_t reservedRam = memory::GlobalAllocator.GetReservedRAM();
+  osStats::updateOSStats();
 
-  GlobalBasicRenderer.SetCursor(x, y);
+  g_BasicRenderer.SetCursor(x, y);
 
-  GlobalBasicRenderer.SetColor(BR_BLUE);
-  GlobalBasicRenderer.Print("Free RAM: ");
-  GlobalBasicRenderer.SetColor(BR_CYAN);
-  if (freeRam / 1099511627776 > 1)
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("Total RAM: ");
+  g_BasicRenderer.SetColor(BR_CYAN);
+  if (osStats::totalRam / 1099511627776 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(freeRam / 1099511627776)));
-    GlobalBasicRenderer.Print(" TB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::totalRam / 1099511627776)));
+    g_BasicRenderer.Print(" TB");
   }
-  else if (freeRam / 1073741824 > 1)
+  else if (osStats::totalRam / 1073741824 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(freeRam / 1073741824)));
-    GlobalBasicRenderer.Print(" GB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::totalRam / 1073741824)));
+    g_BasicRenderer.Print(" GB");
   }
-  else if (freeRam / 1048576 > 1)
+  else if (osStats::totalRam / 1048576 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(freeRam / 1048576)));
-    GlobalBasicRenderer.Print(" MB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::totalRam / 1048576)));
+    g_BasicRenderer.Print(" MB");
   }
-  else if (freeRam / 1024 > 1)
+  else if (osStats::totalRam / 1024 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(freeRam / 1024)));
-    GlobalBasicRenderer.Print(" KB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::totalRam / 1024)));
+    g_BasicRenderer.Print(" KB");
   }
   else
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)freeRam));
-    GlobalBasicRenderer.Print(" B");
+    g_BasicRenderer.Print(to_string((uint64_t)osStats::totalRam));
+    g_BasicRenderer.Print(" B");
   }
 
-  GlobalBasicRenderer.NewLine();
-  GlobalBasicRenderer.SetColor(BR_BLUE);
-  GlobalBasicRenderer.Print("Used RAM: ");
-  GlobalBasicRenderer.SetColor(BR_CYAN);
-  if (usedRam / 1099511627776 > 1)
+  g_BasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("Free RAM: ");
+  g_BasicRenderer.SetColor(BR_CYAN);
+  if (osStats::freeRam / 1099511627776 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(usedRam / 1099511627776)));
-    GlobalBasicRenderer.Print(" TB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::freeRam / 1099511627776)));
+    g_BasicRenderer.Print(" TB");
   }
-  else if (usedRam / 1073741824 > 1)
+  else if (osStats::freeRam / 1073741824 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(usedRam / 1073741824)));
-    GlobalBasicRenderer.Print(" GB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::freeRam / 1073741824)));
+    g_BasicRenderer.Print(" GB");
   }
-  else if (usedRam / 1048576 > 1)
+  else if (osStats::freeRam / 1048576 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(usedRam / 1048576)));
-    GlobalBasicRenderer.Print(" MB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::freeRam / 1048576)));
+    g_BasicRenderer.Print(" MB");
   }
-  else if (usedRam / 1024 > 1)
+  else if (osStats::freeRam / 1024 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(usedRam / 1024)));
-    GlobalBasicRenderer.Print(" KB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::freeRam / 1024)));
+    g_BasicRenderer.Print(" KB");
   }
   else
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)usedRam));
-    GlobalBasicRenderer.Print(" B");
+    g_BasicRenderer.Print(to_string((uint64_t)osStats::freeRam));
+    g_BasicRenderer.Print(" B");
   }
 
-  GlobalBasicRenderer.NewLine();
-  GlobalBasicRenderer.SetColor(BR_BLUE);
-  GlobalBasicRenderer.Print("Reserved RAM: ");
-  GlobalBasicRenderer.SetColor(BR_CYAN);
-  if (reservedRam / 1099511627776 > 1)
+  g_BasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("Used RAM: ");
+  g_BasicRenderer.SetColor(BR_CYAN);
+  if (osStats::usedRam / 1099511627776 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(reservedRam / 1099511627776)));
-    GlobalBasicRenderer.Print(" TB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::usedRam / 1099511627776)));
+    g_BasicRenderer.Print(" TB");
   }
-  else if (reservedRam / 1073741824 > 1)
+  else if (osStats::usedRam / 1073741824 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(reservedRam / 1073741824)));
-    GlobalBasicRenderer.Print(" GB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::usedRam / 1073741824)));
+    g_BasicRenderer.Print(" GB");
   }
-  else if (reservedRam / 1048576 > 1)
+  else if (osStats::usedRam / 1048576 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(reservedRam / 1048576)));
-    GlobalBasicRenderer.Print(" MB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::usedRam / 1048576)));
+    g_BasicRenderer.Print(" MB");
   }
-  else if (reservedRam / 1024 > 1)
+  else if (osStats::usedRam / 1024 > 1)
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)(reservedRam / 1024)));
-    GlobalBasicRenderer.Print(" KB");
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::usedRam / 1024)));
+    g_BasicRenderer.Print(" KB");
   }
   else
   {
-    GlobalBasicRenderer.Print(to_string((uint64_t)reservedRam));
-    GlobalBasicRenderer.Print(" B");
+    g_BasicRenderer.Print(to_string((uint64_t)osStats::usedRam));
+    g_BasicRenderer.Print(" B");
+  }
+
+  g_BasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("Reserved RAM: ");
+  g_BasicRenderer.SetColor(BR_CYAN);
+  if (osStats::reservedRam / 1099511627776 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::reservedRam / 1099511627776)));
+    g_BasicRenderer.Print(" TB");
+  }
+  else if (osStats::reservedRam / 1073741824 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::reservedRam / 1073741824)));
+    g_BasicRenderer.Print(" GB");
+  }
+  else if (osStats::reservedRam / 1048576 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::reservedRam / 1048576)));
+    g_BasicRenderer.Print(" MB");
+  }
+  else if (osStats::reservedRam / 1024 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::reservedRam / 1024)));
+    g_BasicRenderer.Print(" KB");
+  }
+  else
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)osStats::reservedRam));
+    g_BasicRenderer.Print(" B");
+  }
+
+  g_BasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("Frame buffer address: ");
+  g_BasicRenderer.SetColor(BR_CYAN);
+  g_BasicRenderer.Print("0x");
+  g_BasicRenderer.Print(to_hstring(osStats::frameBufferAddr));
+
+  g_BasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("Frame buffer size: ");
+  g_BasicRenderer.SetColor(BR_CYAN);
+  if (osStats::frameBufferSize / 1099511627776 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::frameBufferSize / 1099511627776)));
+    g_BasicRenderer.Print(" TB");
+  }
+  else if (osStats::frameBufferSize / 1073741824 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::frameBufferSize / 1073741824)));
+    g_BasicRenderer.Print(" GB");
+  }
+  else if (osStats::frameBufferSize / 1048576 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::frameBufferSize / 1048576)));
+    g_BasicRenderer.Print(" MB");
+  }
+  else if (osStats::frameBufferSize / 1024 > 1)
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)(osStats::frameBufferSize / 1024)));
+    g_BasicRenderer.Print(" KB");
+  }
+  else
+  {
+    g_BasicRenderer.Print(to_string((uint64_t)osStats::frameBufferSize));
+    g_BasicRenderer.Print(" B");
   }
 }

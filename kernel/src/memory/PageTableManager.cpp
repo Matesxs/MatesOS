@@ -22,7 +22,7 @@ namespace memory
     PageTable *PDP;
     if (!PDE.GetFlag(PT_Flag::Present))
     {
-      PDP = (PageTable *)GlobalAllocator.RequestPage();
+      PDP = (PageTable *)g_Allocator.RequestPage();
       memset(PDP, 0, 0x1000);
       PDE.SetAddress((uint64_t)PDP >> 12);
       PDE.SetFlag(PT_Flag::Present, true);
@@ -38,7 +38,7 @@ namespace memory
     PageTable *PD;
     if (!PDE.GetFlag(PT_Flag::Present))
     {
-      PD = (PageTable *)GlobalAllocator.RequestPage();
+      PD = (PageTable *)g_Allocator.RequestPage();
       memset(PD, 0, 0x1000);
       PDE.SetAddress((uint64_t)PD >> 12);
       PDE.SetFlag(PT_Flag::Present, true);
@@ -54,7 +54,7 @@ namespace memory
     PageTable *PT;
     if (!PDE.GetFlag(PT_Flag::Present))
     {
-      PT = (PageTable *)GlobalAllocator.RequestPage();
+      PT = (PageTable *)g_Allocator.RequestPage();
       memset(PT, 0, 0x1000);
       PDE.SetAddress((uint64_t)PT >> 12);
       PDE.SetFlag(PT_Flag::Present, true);

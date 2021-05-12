@@ -3,11 +3,11 @@
 
 void Panic(const char *message)
 {
-  GlobalBasicRenderer.ClearScreen(BR_RED);
-  GlobalBasicRenderer.SetCursor(400, 300);
-  GlobalBasicRenderer.SetColor(BR_BLACK);
-  GlobalBasicRenderer.Print("Kernel Panic");
-  GlobalBasicRenderer.NewLine();
-  GlobalBasicRenderer.NewLine();
-  GlobalBasicRenderer.Print(message);
+  g_BasicRenderer.ClearScreen(BR_RED);
+  g_BasicRenderer.SetCursor(400, 300);
+  g_BasicRenderer.SetColor(BR_BLACK);
+  g_BasicRenderer.Print("Kernel Panic");
+  g_BasicRenderer.NewLine();
+  g_BasicRenderer.NewLine();
+  g_BasicRenderer.Print(message);
 }

@@ -5,7 +5,7 @@ uint32_t defaultX = 0;
 
 void setLoggerStart(unsigned int x, unsigned int y)
 {
-  if (x <= GlobalBasicRenderer.GetWidth() && y <= GlobalBasicRenderer.GetHeight())
+  if (x <= g_BasicRenderer.GetWidth() && y <= g_BasicRenderer.GetHeight())
   {
     statLoggingCursor.X = x;
     defaultX = x;
@@ -15,84 +15,84 @@ void setLoggerStart(unsigned int x, unsigned int y)
 
 void showSuccess(const char *message)
 {
-  uint32_t tmpColor = GlobalBasicRenderer.GetColor();
-  uint32_t tmpX = GlobalBasicRenderer.GetCursorX();
-  uint32_t tmpY = GlobalBasicRenderer.GetCursorY();
+  uint32_t tmpColor = g_BasicRenderer.GetColor();
+  uint32_t tmpX = g_BasicRenderer.GetCursorX();
+  uint32_t tmpY = g_BasicRenderer.GetCursorY();
 
-  GlobalBasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
+  g_BasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
 
-  GlobalBasicRenderer.SetColor(BR_WHITE);
-  GlobalBasicRenderer.Print("[ ");
-  GlobalBasicRenderer.SetColor(BR_GREEN);
-  GlobalBasicRenderer.Print("OK");
-  GlobalBasicRenderer.SetColor(BR_WHITE);
-  GlobalBasicRenderer.Print(" ] ");
-  GlobalBasicRenderer.Print(message);
-  GlobalBasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("[ ");
+  g_BasicRenderer.SetColor(BR_GREEN);
+  g_BasicRenderer.Print("OK");
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print(" ] ");
+  g_BasicRenderer.Print(message);
+  g_BasicRenderer.NewLine();
 
-  GlobalBasicRenderer.SetColor(tmpColor);
-  statLoggingCursor.X = GlobalBasicRenderer.GetCursorX();
-  statLoggingCursor.Y = GlobalBasicRenderer.GetCursorY();
-  GlobalBasicRenderer.SetCursor(tmpX, tmpY);
+  g_BasicRenderer.SetColor(tmpColor);
+  statLoggingCursor.X = g_BasicRenderer.GetCursorX();
+  statLoggingCursor.Y = g_BasicRenderer.GetCursorY();
+  g_BasicRenderer.SetCursor(tmpX, tmpY);
 }
 
 void showFailed(const char *message)
 {
-  uint32_t tmpColor = GlobalBasicRenderer.GetColor();
-  uint32_t tmpX = GlobalBasicRenderer.GetCursorX();
-  uint32_t tmpY = GlobalBasicRenderer.GetCursorY();
+  uint32_t tmpColor = g_BasicRenderer.GetColor();
+  uint32_t tmpX = g_BasicRenderer.GetCursorX();
+  uint32_t tmpY = g_BasicRenderer.GetCursorY();
 
-  GlobalBasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
+  g_BasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
 
-  GlobalBasicRenderer.SetColor(BR_WHITE);
-  GlobalBasicRenderer.Print("[ ");
-  GlobalBasicRenderer.SetColor(BR_RED);
-  GlobalBasicRenderer.Print("NOK");
-  GlobalBasicRenderer.SetColor(BR_WHITE);
-  GlobalBasicRenderer.Print(" ] ");
-  GlobalBasicRenderer.Print(message);
-  GlobalBasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("[ ");
+  g_BasicRenderer.SetColor(BR_RED);
+  g_BasicRenderer.Print("NOK");
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print(" ] ");
+  g_BasicRenderer.Print(message);
+  g_BasicRenderer.NewLine();
 
-  GlobalBasicRenderer.SetColor(tmpColor);
-  statLoggingCursor.X = GlobalBasicRenderer.GetCursorX();
-  statLoggingCursor.Y = GlobalBasicRenderer.GetCursorY();
-  GlobalBasicRenderer.SetCursor(tmpX, tmpY);
+  g_BasicRenderer.SetColor(tmpColor);
+  statLoggingCursor.X = g_BasicRenderer.GetCursorX();
+  statLoggingCursor.Y = g_BasicRenderer.GetCursorY();
+  g_BasicRenderer.SetCursor(tmpX, tmpY);
 }
 
 void showInfo(const char *message)
 {
-  uint32_t tmpColor = GlobalBasicRenderer.GetColor();
-  uint32_t tmpX = GlobalBasicRenderer.GetCursorX();
-  uint32_t tmpY = GlobalBasicRenderer.GetCursorY();
+  uint32_t tmpColor = g_BasicRenderer.GetColor();
+  uint32_t tmpX = g_BasicRenderer.GetCursorX();
+  uint32_t tmpY = g_BasicRenderer.GetCursorY();
 
-  GlobalBasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
+  g_BasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
 
-  GlobalBasicRenderer.SetColor(BR_WHITE);
-  GlobalBasicRenderer.Print("[ * ] ");
-  GlobalBasicRenderer.Print(message);
-  GlobalBasicRenderer.NewLine();
+  g_BasicRenderer.SetColor(BR_WHITE);
+  g_BasicRenderer.Print("[ * ] ");
+  g_BasicRenderer.Print(message);
+  g_BasicRenderer.NewLine();
 
-  GlobalBasicRenderer.SetColor(tmpColor);
-  statLoggingCursor.X = GlobalBasicRenderer.GetCursorX();
-  statLoggingCursor.Y = GlobalBasicRenderer.GetCursorY();
-  GlobalBasicRenderer.SetCursor(tmpX, tmpY);
+  g_BasicRenderer.SetColor(tmpColor);
+  statLoggingCursor.X = g_BasicRenderer.GetCursorX();
+  statLoggingCursor.Y = g_BasicRenderer.GetCursorY();
+  g_BasicRenderer.SetCursor(tmpX, tmpY);
 }
 
 void printStats(const char *message, uint32_t color)
 {
-  uint32_t tmpColor = GlobalBasicRenderer.GetColor();
-  uint32_t tmpX = GlobalBasicRenderer.GetCursorX();
-  uint32_t tmpY = GlobalBasicRenderer.GetCursorY();
+  uint32_t tmpColor = g_BasicRenderer.GetColor();
+  uint32_t tmpX = g_BasicRenderer.GetCursorX();
+  uint32_t tmpY = g_BasicRenderer.GetCursorY();
 
-  GlobalBasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
+  g_BasicRenderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
 
-  GlobalBasicRenderer.SetColor(color);
-  GlobalBasicRenderer.Print(message);
+  g_BasicRenderer.SetColor(color);
+  g_BasicRenderer.Print(message);
 
-  GlobalBasicRenderer.SetColor(tmpColor);
-  statLoggingCursor.X = GlobalBasicRenderer.GetCursorX();
-  statLoggingCursor.Y = GlobalBasicRenderer.GetCursorY();
-  GlobalBasicRenderer.SetCursor(tmpX, tmpY);
+  g_BasicRenderer.SetColor(tmpColor);
+  statLoggingCursor.X = g_BasicRenderer.GetCursorX();
+  statLoggingCursor.Y = g_BasicRenderer.GetCursorY();
+  g_BasicRenderer.SetCursor(tmpX, tmpY);
 }
 
 void statNewLine()

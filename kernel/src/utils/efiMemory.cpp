@@ -1,6 +1,6 @@
 #include "efiMemory.h"
 
-const char* EFI_MEMORY_TYPE_STRINGS[] {
+const char *EFI_MEMORY_TYPE_STRINGS[]{
 
     "EfiReservedMemoryType",
     "EfiLoaderCode",

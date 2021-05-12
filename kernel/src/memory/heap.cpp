@@ -65,7 +65,7 @@ namespace memory
     size_t pageCounter = 0;
     for (; pageCounter < pageCount; pageCounter++)
     {
-      void *newPage = GlobalAllocator.RequestPage();
+      void *newPage = g_Allocator.RequestPage();
       if (newPage == NULL)
         break;
 
@@ -101,7 +101,7 @@ namespace memory
     size_t pageCounter = 0;
     for (; pageCounter < pageCount; pageCounter++)
     {
-      void *newPage = GlobalAllocator.RequestPage();
+      void *newPage = g_Allocator.RequestPage();
       if (newPage == NULL)
         break;
 

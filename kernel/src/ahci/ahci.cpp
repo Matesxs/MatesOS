@@ -97,12 +97,12 @@ namespace AHCI
   {
     StopCMD();
 
-    void *newBase = memory::GlobalAllocator.RequestPage();
+    void *newBase = memory::g_Allocator.RequestPage();
     hbaPort->commandListBase = (uint32_t)(uint64_t)newBase;
     hbaPort->commandListBaseUpper = (uint32_t)((uint64_t)newBase >> 32);
     memset((void *)(hbaPort->commandListBase), 0, 1024);
 
-    void *fisBase = memory::GlobalAllocator.RequestPage();
+    void *fisBase = memory::g_Allocator.RequestPage();
     hbaPort->fisBaseAddress = (uint32_t)(uint64_t)fisBase;
     hbaPort->fisBaseAddressUpper = (uint32_t)((uint64_t)fisBase >> 32);
     memset(fisBase, 0, 256);
@@ -113,7 +113,7 @@ namespace AHCI
     {
       cmdHeader[i].prdtLength = 8;
 
-      void *cmdTableAddress = memory::GlobalAllocator.RequestPage();
+      void *cmdTableAddress = memory::g_Allocator.RequestPage();
       uint64_t address = (uint64_t)cmdTableAddress + (i << 8);
       cmdHeader[i].commandTableBaseAddress = (uint32_t)(uint64_t)address;
       cmdHeader[i].commandTableBaseAddressUpper = (uint32_t)((uint64_t)address >> 32);
@@ -226,25 +226,25 @@ namespace AHCI
 
     ProbePorts();
 
-    GlobalBasicRenderer.SetCursor(50, 400);
+    g_BasicRenderer.SetCursor(50, 400);
     for (uint8_t i = 0; i < portCount; i++)
     {
       Port *port = ports[i];
 
       port->Configure();
 
-      port->buffer = (uint8_t *)memory::GlobalAllocator.RequestPage();
+      port->buffer = (uint8_t *)memory::g_Allocator.RequestPage();
       memset(port->buffer, 0, 0x1000);
 
-      GlobalBasicRenderer.Print("\nDebug dump port ");
-      GlobalBasicRenderer.Print(to_string((uint64_t)i));
-      GlobalBasicRenderer.Print(":\n");
+      g_BasicRenderer.Print("\nDebug dump port ");
+      g_BasicRenderer.Print(to_string((uint64_t)i));
+      g_BasicRenderer.Print(":\n");
       port->Read(0, 6, port->buffer);
       for (int t = 0; t < 1024; t++)
       {
-        GlobalBasicRenderer.PutChar(port->buffer[t]);
+        g_BasicRenderer.PutChar(port->buffer[t]);
       }
-      GlobalBasicRenderer.NewLine();
+      g_BasicRenderer.NewLine();
     }
 
     showSuccess("AHCI Driver initialized");
