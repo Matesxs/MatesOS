@@ -191,10 +191,8 @@ namespace AHCI
     {
       spin++;
     }
-    if (spin == 1000000)
-    {
-      return false;
-    }
+
+    if (spin == 1000000) return false;
 
     hbaPort->commandIssue = 1;
 
@@ -203,6 +201,7 @@ namespace AHCI
 
       if ((hbaPort->commandIssue == 0))
         break;
+
       if (hbaPort->interruptStatus & HBA_PxIS_TFES)
       {
         return false;
@@ -216,7 +215,7 @@ namespace AHCI
   {
     this->PCIBaseAddress = pciBaseAddress;
 
-    ABAR = (HBAMemory *)((PCI::PCIHeader0 *)pciBaseAddress)->BAR5;
+    ABAR = (HBAMemory*)((PCI::PCIHeader0*)pciBaseAddress)->BAR5;
     memory::g_PageTableManager.MapMemory(ABAR, ABAR);
   }
 

@@ -23,21 +23,21 @@ void HandleKeyboard(uint8_t scancode)
       return;
 
     case Enter:
-      g_BasicRenderer.NewLine();
+      // g_BasicRenderer.NewLine();
       return;
 
     case Spacebar:
-      g_BasicRenderer.PutChar(' ');
+      // g_BasicRenderer.PutChar(' ');
       return;
 
     case BackSpace:
-      g_BasicRenderer.ClearChar();
+      // g_BasicRenderer.ClearChar();
       return;
   }
 
   char ascii = QWERTYKeyboard::Translate(scancode, isLeftShiftPressed | isRightShiftPressed);
   if (ascii != 0)
   {
-    g_BasicRenderer.PutChar(ascii);
+    // g_BasicRenderer.PutChar(ascii);
   }
 }
