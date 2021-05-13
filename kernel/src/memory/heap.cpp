@@ -8,6 +8,7 @@ namespace memory
   void *heapEnd;
   HeapSegHdr *LastHdr;
   uint64_t usedPages = 0;
+  size_t start_page_count = 0;
 
   bool InitializeHeap(void *heapAddress, size_t pageCount)
   {
@@ -38,6 +39,7 @@ namespace memory
     startSeg->free = true;
 
     LastHdr = startSeg;
+    start_page_count = pageCount;
     return true;
   }
 
@@ -96,6 +98,30 @@ namespace memory
     newSegment->CombineBackward();
 
     return true;
+  }
+
+  void TrimHeap()
+  {
+    if (usedPages <= start_page_count) return;
+
+    void *last = NULL;
+    HeapSegHdr *currentSeg = (HeapSegHdr *)heapStart;
+    while (true)
+    {
+      if (currentSeg->free)
+      {
+        
+      }
+      else
+      {
+        last = NULL;
+      }
+
+      if (currentSeg->next == NULL)
+        break;
+
+      currentSeg = currentSeg->next;
+    }
   }
 
   void HeapSegHdr::CombineForward()

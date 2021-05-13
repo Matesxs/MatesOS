@@ -103,7 +103,7 @@ void PrepareACPI(BootInfo *bootInfo)
 
 void InitializeKernel(BootInfo *bootInfo)
 {
-  InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BR_WHITE, __BACKGROUND_COLOR);
+  BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
   setLoggerStart(50, 50);
 
   GDTDescriptor gdtDescriptor;
@@ -112,7 +112,7 @@ void InitializeKernel(BootInfo *bootInfo)
   LoadGDT(&gdtDescriptor);
 
   PrepareMemory(bootInfo);
-  g_BasicRenderer.ClearScreen();
+  BasicRenderer::g_Renderer.ClearScreen();
   showSuccess("Memory initialized");
 
   if (memory::InitializeHeap((void*)0x0000100000000000, 0x10)) showSuccess("Heap initialized");

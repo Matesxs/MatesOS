@@ -227,7 +227,6 @@ namespace AHCI
 
     ProbePorts();
 
-    g_BasicRenderer.SetCursor(50, 400);
     for (uint8_t i = 0; i < portCount; i++)
       ports[i]->Configure();
 

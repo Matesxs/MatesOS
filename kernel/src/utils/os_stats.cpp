@@ -20,7 +20,7 @@ namespace osStats
     usedRam = memory::g_Allocator.GetUsedMemory();
     totalRam = memory::g_Allocator.GetTotalMemory();
 
-    FrameBuffer fbuff = g_BasicRenderer.GetFramebuffer();
+    FrameBuffer fbuff = BasicRenderer::g_Renderer.GetFramebuffer();
     frameBufferAddr = (uint64_t)fbuff.BaseAddress;
     frameBufferSize = fbuff.BufferSize;
 
