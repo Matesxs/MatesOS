@@ -156,7 +156,7 @@ namespace AHCI
     void Configure();
     void StartCMD();
     void StopCMD();
-    bool Read(uint64_t sector, uint32_t sectorCount, void *buffer);
+    bool Read(uint64_t sector, uint32_t sectorCount);
   };
 
   class AHCIDriver : public driver::Driver

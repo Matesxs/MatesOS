@@ -147,8 +147,10 @@ namespace AHCI
     hbaPort->cmdSts |= HBA_PxCMD_ST;
   }
 
-  bool Port::Read(uint64_t sector, uint32_t sectorCount, void *buffer)
+  bool Port::Read(uint64_t sector, uint32_t sectorCount)
   {
+    if (buffer == NULL) return false;
+
     uint32_t sectorL = (uint32_t)sector;
     uint32_t sectorH = (uint32_t)(sector >> 32);
 
@@ -178,7 +180,7 @@ namespace AHCI
     cmdFIS->lba2 = (uint8_t)(sectorL >> 16);
     cmdFIS->lba3 = (uint8_t)sectorH;
     cmdFIS->lba4 = (uint8_t)(sectorH >> 8);
-    cmdFIS->lba4 = (uint8_t)(sectorH >> 16);
+    cmdFIS->lba5 = (uint8_t)(sectorH >> 16);
 
     cmdFIS->deviceRegister = 1 << 6; //LBA mode
 
@@ -227,26 +229,9 @@ namespace AHCI
 
     g_BasicRenderer.SetCursor(50, 400);
     for (uint8_t i = 0; i < portCount; i++)
-    {
-      Port *port = ports[i];
+      ports[i]->Configure();
 
-      port->Configure();
-
-      port->buffer = (uint8_t *)memory::g_Allocator.RequestPage();
-      memset(port->buffer, 0, 0x1000);
-
-      g_BasicRenderer.Print("\nDebug dump port ");
-      g_BasicRenderer.Print(to_string((uint64_t)i));
-      g_BasicRenderer.Print(":\n");
-      port->Read(0, 6, port->buffer);
-      for (int t = 0; t < 1024; t++)
-      {
-        g_BasicRenderer.PutChar(port->buffer[t]);
-      }
-      g_BasicRenderer.NewLine();
-    }
-
-    showSuccess("AHCI Driver initialized");
+    showSuccess("AHCI Driver loaded");
     printStats("   - Found ");
     printStats(to_string((uint64_t)portCount));
     printStats(" ports");

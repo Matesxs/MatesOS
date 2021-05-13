@@ -115,13 +115,12 @@ void InitializeKernel(BootInfo *bootInfo)
   g_BasicRenderer.ClearScreen();
   showSuccess("Memory initialized");
 
-  uint64_t heapInitPages = memory::InitializeHeap((void*)0x0000100000000000, 0x100);
-  if (heapInitPages == 0)
+  if (memory::InitializeHeap((void*)0x0000100000000000, 0x10)) showSuccess("Heap initialized");
+  else
   {
     showFailed("Heap initialization failed");
     halt();
   }
-  else showSuccess("Heap initialized");
 
   PrepareInterrupts();
 
