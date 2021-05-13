@@ -22,6 +22,8 @@ namespace memory
   void free(void *address);
 
   bool ExpandHeap(size_t length);
+
+  uint64_t GetHeapPages();
 }
 
 void *operator new(size_t n);

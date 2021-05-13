@@ -222,8 +222,12 @@ void BasicRenderer::PutChar(char chr, unsigned int xOff, unsigned int yOff)
 	char *fontPtr = (char*)font->glyphBuffer + (chr * font->psf1_header->charsize);
 	for (unsigned long y = yOff; y < yOff + 16; y++)
 	{
+		if (y > frameBuffer->Height) break;
+
 		for (unsigned long x = xOff; x < xOff + 8; x++)
 		{
+			if (x > frameBuffer->Width) break;
+
 			if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0)
 			{
 				*(unsigned int*)(pixPtr + x + (y * frameBuffer->PixelsPerScanline)) = color;

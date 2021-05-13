@@ -1,5 +1,6 @@
 #include "os_stats.h"
 #include "../memory/PageFrameAllocator.h"
+#include "../memory/heap.h"
 #include "../renderer/basic_renderer.h"
 
 namespace osStats
@@ -10,6 +11,7 @@ namespace osStats
   uint64_t reservedRam;
   uint64_t frameBufferAddr;
   uint64_t frameBufferSize;
+  uint64_t heapPages;
 
   void updateOSStats()
   {
@@ -21,5 +23,7 @@ namespace osStats
     FrameBuffer fbuff = g_BasicRenderer.GetFramebuffer();
     frameBufferAddr = (uint64_t)fbuff.BaseAddress;
     frameBufferSize = fbuff.BufferSize;
+
+    heapPages = memory::GetHeapPages();
   }
 }

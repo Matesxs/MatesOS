@@ -11,6 +11,8 @@ namespace memory
 
   bool InitializeHeap(void *heapAddress, size_t pageCount)
   {
+    if (heapStart != NULL) return false;
+
     void *pos = heapAddress;
 
     for (size_t i = 0; i < pageCount; i++)
@@ -19,7 +21,7 @@ namespace memory
       if (temp == NULL) return false;
 
       g_PageTableManager.MapMemory(pos, temp);
-      
+
       pos = (void *)((size_t)pos + 0x1000);
       usedPages++;
     }
@@ -80,7 +82,9 @@ namespace memory
       if (tmp == NULL) return false;
 
       g_PageTableManager.MapMemory(heapEnd, tmp);
+
       heapEnd = (void *)((size_t)heapEnd + 0x1000);
+      usedPages++;
     }
 
     newSegment->free = true;
@@ -171,6 +175,11 @@ namespace memory
     segment->free = true;
     segment->CombineForward();
     segment->CombineBackward();
+  }
+
+  uint64_t GetHeapPages()
+  {
+    return usedPages;
   }
 }
 
