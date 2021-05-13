@@ -20,7 +20,7 @@ namespace BasicRenderer
     void SetFont(PSF1_FONT *_font);
     void SetColor(uint32_t _color);
     void SetBackColor(uint32_t _color);
-    void PutPix(uint32_t x, uint32_t y, uint32_t color);
+    void SetPix(uint32_t x, uint32_t y, uint32_t color);
 
     FrameBuffer GetFramebuffer();
     unsigned int GetCursorX();

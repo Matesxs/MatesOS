@@ -42,18 +42,41 @@ namespace BasicRenderer
 		}
 	}
 
-	void Renderer::PutPix(uint32_t x, uint32_t y, uint32_t color)
+	void Renderer::ClearChar()
 	{
-		if (x > frameBuffer->Width || y > frameBuffer->Height)
+		if (font == NULL || frameBuffer == NULL)
 			return;
-		*(uint32_t *)((uint64_t)frameBuffer->BaseAddress + (x * 4) + (y * frameBuffer->PixelsPerScanline * 4)) = color;
-	}
 
-	uint32_t Renderer::GetPix(uint32_t x, uint32_t y)
-	{
-		if (x > frameBuffer->Width || y > frameBuffer->Height)
-			return BR_BLACK;
-		return *(uint32_t *)((uint64_t)frameBuffer->BaseAddress + (x * 4) + (y * frameBuffer->PixelsPerScanline * 4));
+		if (textCursorPos.X <= baseXOff)
+		{
+			textCursorPos.X = frameBuffer->Width;
+			textCursorPos.Y -= 16;
+			if (textCursorPos.Y < 0)
+				textCursorPos.Y = 0;
+		}
+
+		unsigned int xOff = textCursorPos.X;
+		unsigned int yOff = textCursorPos.Y;
+
+		unsigned int *pixPtr = (unsigned int *)frameBuffer->BaseAddress;
+		for (unsigned long y = yOff; y < yOff + 16; y++)
+		{
+			for (unsigned long x = xOff - 8; x < xOff; x++)
+			{
+				*(unsigned int *)(pixPtr + x + (y * frameBuffer->PixelsPerScanline)) = clearColor;
+			}
+		}
+
+		textCursorPos.X -= 8;
+		if (textCursorPos.X < baseXOff)
+		{
+			textCursorPos.X = frameBuffer->Width;
+			textCursorPos.Y -= 16;
+			if (textCursorPos.Y < 0)
+			{
+				textCursorPos.Y = 0;
+			}
+		}
 	}
 
 	void Renderer::ClearMouseCursor(uint8_t *mouseCursor, Point position)
@@ -82,7 +105,7 @@ namespace BasicRenderer
 				{
 					if (GetPix(position.X + x, position.Y + y) == mouseCursorBufferAfter[x + y * 16])
 					{
-						PutPix(position.X + x, position.Y + y, mouseCursorBuffer[x + y * 16]);
+						SetPix(position.X + x, position.Y + y, mouseCursorBuffer[x + y * 16]);
 					}
 				}
 			}
@@ -111,7 +134,7 @@ namespace BasicRenderer
 				if ((mouseCursor[byte] & (0b10000000 >> (x % 8))))
 				{
 					mouseCursorBuffer[x + y * 16] = GetPix(position.X + x, position.Y + y);
-					PutPix(position.X + x, position.Y + y, color);
+					SetPix(position.X + x, position.Y + y, color);
 					mouseCursorBufferAfter[x + y * 16] = GetPix(position.X + x, position.Y + y);
 				}
 			}
@@ -120,80 +143,10 @@ namespace BasicRenderer
 		MouseDrawn = true;
 	}
 
-	void Renderer::SetCursor(unsigned int x, unsigned int y)
-	{
-		if (x < 0 || y < 0)
-			return;
-
-		textCursorPos = {x, y};
-		baseXOff = x;
-	}
-
 	void Renderer::NewLine()
 	{
 		textCursorPos.X = baseXOff;
 		textCursorPos.Y += 16;
-	}
-
-	unsigned int Renderer::GetCursorX()
-	{
-		return textCursorPos.X;
-	}
-
-	unsigned int Renderer::GetCursorY()
-	{
-		return textCursorPos.Y;
-	}
-
-	uint64_t Renderer::GetHeight()
-	{
-		return frameBuffer->Height;
-	}
-
-	uint64_t Renderer::GetWidth()
-	{
-		return frameBuffer->Width;
-	}
-
-	void Renderer::SetFont(PSF1_FONT *_font)
-	{
-		if (_font == NULL)
-			return;
-
-		font = _font;
-	}
-
-	void Renderer::SetColor(uint32_t _color)
-	{
-		color = _color;
-	}
-
-	void Renderer::SetBackColor(uint32_t _color)
-	{
-		clearColor = _color;
-	}
-
-	uint32_t Renderer::GetColor()
-	{
-		return color;
-	}
-
-	uint32_t Renderer::GetBackColor()
-	{
-		return clearColor;
-	}
-
-	void Renderer::SetFramebuffer(FrameBuffer *_frameBuffer)
-	{
-		if (_frameBuffer == NULL)
-			return;
-
-		frameBuffer = _frameBuffer;
-	}
-
-	FrameBuffer Renderer::GetFramebuffer()
-	{
-		return *frameBuffer;
 	}
 
 	void Renderer::Print(const char *str)
@@ -271,43 +224,6 @@ namespace BasicRenderer
 		{
 			textCursorPos.X = baseXOff;
 			textCursorPos.Y += 16;
-		}
-	}
-
-	void Renderer::ClearChar()
-	{
-		if (font == NULL || frameBuffer == NULL)
-			return;
-
-		if (textCursorPos.X <= baseXOff)
-		{
-			textCursorPos.X = frameBuffer->Width;
-			textCursorPos.Y -= 16;
-			if (textCursorPos.Y < 0)
-				textCursorPos.Y = 0;
-		}
-
-		unsigned int xOff = textCursorPos.X;
-		unsigned int yOff = textCursorPos.Y;
-
-		unsigned int *pixPtr = (unsigned int *)frameBuffer->BaseAddress;
-		for (unsigned long y = yOff; y < yOff + 16; y++)
-		{
-			for (unsigned long x = xOff - 8; x < xOff; x++)
-			{
-				*(unsigned int *)(pixPtr + x + (y * frameBuffer->PixelsPerScanline)) = clearColor;
-			}
-		}
-
-		textCursorPos.X -= 8;
-		if (textCursorPos.X < baseXOff)
-		{
-			textCursorPos.X = frameBuffer->Width;
-			textCursorPos.Y -= 16;
-			if (textCursorPos.Y < 0)
-			{
-				textCursorPos.Y = 0;
-			}
 		}
 	}
 }
