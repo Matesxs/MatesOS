@@ -22,7 +22,6 @@ namespace memory
   void free(void *address);
 
   bool ExpandHeap(size_t length);
-  void TrimHeap();
 
   uint64_t GetHeapPages();
 }

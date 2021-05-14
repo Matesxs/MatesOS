@@ -100,30 +100,6 @@ namespace memory
     return true;
   }
 
-  void TrimHeap()
-  {
-    if (usedPages <= start_page_count) return;
-
-    void *last = NULL;
-    HeapSegHdr *currentSeg = (HeapSegHdr *)heapStart;
-    while (true)
-    {
-      if (currentSeg->free)
-      {
-        
-      }
-      else
-      {
-        last = NULL;
-      }
-
-      if (currentSeg->next == NULL)
-        break;
-
-      currentSeg = currentSeg->next;
-    }
-  }
-
   void HeapSegHdr::CombineForward()
   {
     if (next == NULL)
@@ -167,14 +143,16 @@ namespace memory
     {
       if (currentSeg->free)
       {
-        if (currentSeg->length > size)
+        size_t curSize = currentSeg->length - sizeof(HeapSegHdr);
+
+        if (curSize > size)
         {
           currentSeg->Split(size);
           currentSeg->free = false;
           return (void *)((uint64_t)currentSeg + sizeof(HeapSegHdr));
         }
 
-        if (currentSeg->length == size)
+        if (curSize == size)
         {
           currentSeg->free = false;
           return (void *)((uint64_t)currentSeg + sizeof(HeapSegHdr));
