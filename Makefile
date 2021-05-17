@@ -42,3 +42,7 @@ createboot: rebuild
 	@cp $(STATICSRCDIR)/fonts/zap-ext-light16.psf bootFiles/zap-ext-light16.psf
 	@cp $(BINDIR)/kernel.elf bootFiles/kernel.elf
 
+.PHONY: run
+run: bootloader
+	cd kernel && $(MAKE) run
+
