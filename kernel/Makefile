@@ -24,36 +24,40 @@ ASMSRC = $(call rwildcard,$(SRCDIR),*.asm)
 OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 OBJS += $(patsubst $(SRCDIR)/%.asm, $(OBJDIR)/%_asm.o, $(ASMSRC))
 
-$(OBJDIR)/interrupts/interrupts.o: $(SRCDIR)/interrupts/interrupts.cpp
+$(OBJDIR)/interrupts/interrupts.o: $(SRCDIR)/interrupts/interrupts.cpp | $(OBJDIR)
 	@ echo !======= COMPILING $^
 	@ mkdir -p $(@D)
 	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -c $^ -o $@
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	@ echo !======= COMPILING $^
 	@ mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $^ -o $@
 
-$(OBJDIR)/%_asm.o: $(SRCDIR)/%.asm
+$(OBJDIR)/%_asm.o: $(SRCDIR)/%.asm | $(OBJDIR)
 	@ echo !======= COMPILING $^
 	@ mkdir -p $(@D)
 	$(ASMC) $(ASMFLAGS) $^ -f elf64 -o $@
 
-kernel: $(OBJS) link
-
-link:
+$(BUILDDIR)/kernel.elf: $(OBJS) | $(BUILDDIR)
 	@ echo !======= LINKING $^
 	$(LD) $(LDFLAGS) -o $(BUILDDIR)/kernel.elf $(OBJS)
 
-setup:
+kernel: $(BUILDDIR)/kernel.elf
+
+$(BUILDDIR):
+	@echo !======= Creating build directory
 	@mkdir $(BUILDDIR)
+
+$(OBJDIR):
+	@echo !======= Creating build object
 	@mkdir $(OBJDIR)
 
 clean:
 	@rm -rf $(BUILDDIR)
 	@rm -rf $(OBJDIR)
 
-buildimg:
+buildimg: kernel
 	dd if=/dev/zero of=$(BUILDDIR)/$(OSNAME).img bs=512 count=93750
 	mformat -i $(BUILDDIR)/$(OSNAME).img -f 1440 ::
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI
@@ -63,5 +67,5 @@ buildimg:
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/kernel.elf ::
 	mcopy -i $(BUILDDIR)/$(OSNAME).img staticsrc/fonts/zap-light16.psf ::
 
-run: kernel buildimg
+run: buildimg
 	qemu-system-x86_64 -machine q35 -drive file=$(BUILDDIR)/$(OSNAME).img -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
