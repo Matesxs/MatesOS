@@ -23,7 +23,10 @@ namespace memory
     uint64_t Value;
     void SetFlag(PT_Flag flag, bool enabled);
     bool GetFlag(PT_Flag flag);
+    void SetFlags(uint64_t flags);
+    uint64_t GetFlags();
     void SetAddress(uint64_t address);
+    void Clear();
     uint64_t GetAddress();
   };
 

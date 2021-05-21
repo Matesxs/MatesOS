@@ -1,6 +1,7 @@
+#include <stdint.h>
+#include <stddef.h>
 #include "PageTableManager.h"
 #include "PageMapIndexer.h"
-#include <stdint.h>
 #include "PageFrameAllocator.h"
 #include "../utils/memory.h"
 
@@ -13,7 +14,7 @@ namespace memory
     this->PML4 = PML4Address;
   }
 
-  void PageTableManager::MapMemory(void *virtualMemory, void *physicalMemory)
+  void* PageTableManager::MapMemory(void *virtualMemory, void *physicalMemory)
   {
     PageMapIndexer indexer = PageMapIndexer((uint64_t)virtualMemory);
     PageDirectoryEntry PDE;
@@ -71,5 +72,79 @@ namespace memory
     PDE.SetFlag(PT_Flag::Present, true);
     PDE.SetFlag(PT_Flag::ReadWrite, true);
     PT->entries[indexer.P_i] = PDE;
+
+    return virtualMemory;
+  }
+
+  void* PageTableManager::WalkMemory(void *virtualMemory)
+  {
+    PageMapIndexer indexer = PageMapIndexer((uint64_t)virtualMemory);
+    PageDirectoryEntry PDE;
+
+    PDE = PML4->entries[indexer.PDP_i];
+    PageTable *PDP;
+
+    if (!PDE.GetFlag(PT_Flag::Present))
+      return NULL;
+
+    PDP = (PageTable *)((uint64_t)PDE.GetAddress() << 12);
+    PDE = PDP->entries[indexer.PD_i];
+    PageTable *PD;
+
+    if (!PDE.GetFlag(PT_Flag::Present))
+      return NULL;
+
+    PD = (PageTable *)((uint64_t)PDE.GetAddress() << 12);
+    PDE = PD->entries[indexer.PT_i];
+    PageTable *PT;
+
+    if (!PDE.GetFlag(PT_Flag::Present))
+      return NULL;
+
+    PT = (PageTable *)((uint64_t)PDE.GetAddress() << 12);
+    PDE = PT->entries[indexer.P_i];
+
+    return (void*)((uint64_t)PDE.GetAddress() << 12);
+  }
+
+  void PageTableManager::UnmapMemory(void *virtualMemory)
+  {
+    PageMapIndexer indexer = PageMapIndexer((uint64_t)virtualMemory);
+    PageDirectoryEntry PDE;
+
+    PDE = PML4->entries[indexer.PDP_i];
+    PageTable *PDP;
+
+    if (!PDE.GetFlag(PT_Flag::Present))
+      return;
+
+    PDP = (PageTable *)((uint64_t)PDE.GetAddress() << 12);
+    PDE = PDP->entries[indexer.PD_i];
+    PageTable *PD;
+
+    if (!PDE.GetFlag(PT_Flag::Present))
+      return;
+
+    PD = (PageTable *)((uint64_t)PDE.GetAddress() << 12);
+    PDE = PD->entries[indexer.PT_i];
+    PageTable *PT;
+
+    if (!PDE.GetFlag(PT_Flag::Present))
+      return;
+
+    PT = (PageTable *)((uint64_t)PDE.GetAddress() << 12);
+
+    PDE = PT->entries[indexer.P_i];
+    PDE.Clear();
+    PT->entries[indexer.P_i] = PDE;
+  }
+
+  void* PageTableManager::RemapMemory(void *oldMemory, void *newMemory)
+  {
+    void *physAddr = WalkMemory(oldMemory);
+    if (physAddr == NULL) return NULL;
+
+    UnmapMemory(oldMemory);
+    return MapMemory(newMemory, physAddr);
   }
 }
