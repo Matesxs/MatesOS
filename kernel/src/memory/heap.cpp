@@ -6,6 +6,7 @@ namespace memory
 {
   void *heapStart;
   void *heapEnd;
+
   HeapSegHdr *LastHdr;
   uint64_t usedPages = 0;
   size_t start_page_count = 0;
@@ -151,8 +152,7 @@ namespace memory
           currentSeg->free = false;
           return (void *)((uint64_t)currentSeg + sizeof(HeapSegHdr));
         }
-
-        if (curSize == size)
+        else if (curSize == size)
         {
           currentSeg->free = false;
           return (void *)((uint64_t)currentSeg + sizeof(HeapSegHdr));
