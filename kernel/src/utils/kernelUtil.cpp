@@ -127,8 +127,8 @@ void InitializeKernel(BootInfo *bootInfo)
   InitPS2Mouse();
   showSuccess("Mouse initialized");
 
-  WriteBus(PIC1_DATA, 0b11111000);
-  WriteBus(PIC2_DATA, 0b11101111);
+  outb(PIC1_DATA, 0b11111000);
+  outb(PIC2_DATA, 0b11101111);
 
   PrepareACPI(bootInfo);
 

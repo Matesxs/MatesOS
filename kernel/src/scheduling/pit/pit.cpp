@@ -25,9 +25,9 @@ namespace PIT
     if (divisor < 100) divisor = 100;
     Divisor = divisor;
 
-    WriteBus(0x40, (uint8_t)(divisor & 0x00ff));
-    IOWait();
-    WriteBus(0x40, (uint8_t)((divisor & 0xff00) >> 8));
+    outb(0x40, (uint8_t)(divisor & 0x00ff));
+    waitb();
+    outb(0x40, (uint8_t)((divisor & 0xff00) >> 8));
   }
 
   uint64_t GetFrequency()

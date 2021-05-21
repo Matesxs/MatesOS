@@ -26,14 +26,14 @@ __attribute__((interrupt)) void GPFault_Handler(interrupt_frame *frame)
 
 __attribute__((interrupt)) void KeyboardInt_Handler(interrupt_frame *frame)
 {
-  uint8_t scanCode = ReadBus(0x60);
+  uint8_t scanCode = inb(0x60);
   HandleKeyboard(scanCode);
   PIC_EndMaster();
 }
 
 __attribute__((interrupt)) void MouseInt_Handler(interrupt_frame *frame)
 {
-  uint8_t mouseData = ReadBus(0x60);
+  uint8_t mouseData = inb(0x60);
   HandlePS2Mouse(mouseData);
   PIC_EndSlave();
 }
@@ -48,43 +48,43 @@ void RemapPIC()
 {
   uint8_t a1, a2;
 
-  a1 = ReadBus(PIC1_DATA);
-  IOWait();
-  a2 = ReadBus(PIC2_DATA);
-  IOWait();
+  a1 = inb(PIC1_DATA);
+  waitb();
+  a2 = inb(PIC2_DATA);
+  waitb();
 
-  WriteBus(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
-  IOWait();
-  WriteBus(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
-  IOWait();
+  outb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
+  waitb();
+  outb(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
+  waitb();
 
-  WriteBus(PIC1_DATA, 0x20);
-  IOWait();
-  WriteBus(PIC2_DATA, 0x28);
-  IOWait();
+  outb(PIC1_DATA, 0x20);
+  waitb();
+  outb(PIC2_DATA, 0x28);
+  waitb();
 
-  WriteBus(PIC1_DATA, 4);
-  IOWait();
-  WriteBus(PIC2_DATA, 2);
-  IOWait();
+  outb(PIC1_DATA, 4);
+  waitb();
+  outb(PIC2_DATA, 2);
+  waitb();
 
-  WriteBus(PIC1_DATA, ICW4_8086);
-  IOWait();
-  WriteBus(PIC2_DATA, ICW4_8086);
-  IOWait();
+  outb(PIC1_DATA, ICW4_8086);
+  waitb();
+  outb(PIC2_DATA, ICW4_8086);
+  waitb();
 
-  WriteBus(PIC1_DATA, a1);
-  IOWait();
-  WriteBus(PIC2_DATA, a2);
+  outb(PIC1_DATA, a1);
+  waitb();
+  outb(PIC2_DATA, a2);
 }
 
 void PIC_EndMaster()
 {
-  WriteBus(PIC1_COMMAND, PIC_EOI);
+  outb(PIC1_COMMAND, PIC_EOI);
 }
 
 void PIC_EndSlave()
 {
-  WriteBus(PIC2_COMMAND, PIC_EOI);
-  WriteBus(PIC1_COMMAND, PIC_EOI);
+  outb(PIC2_COMMAND, PIC_EOI);
+  outb(PIC1_COMMAND, PIC_EOI);
 }

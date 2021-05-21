@@ -25,7 +25,7 @@ void MouseWait()
   
   while (timeout--)
   {
-    if ((ReadBus(0x64) & 0b10) == 0)
+    if ((inb(0x64) & 0b10) == 0)
     {
       return;
     }
@@ -38,7 +38,7 @@ void MouseWaitInput()
   
   while (timeout--)
   {
-    if (ReadBus(0x64) & 0b1)
+    if (inb(0x64) & 0b1)
     {
       return;
     }
@@ -48,30 +48,30 @@ void MouseWaitInput()
 void MouseWrite(uint8_t value)
 {
   MouseWait();
-  WriteBus(0x64, 0xD4);
+  outb(0x64, 0xD4);
   MouseWait();
-  WriteBus(0x60, value);
+  outb(0x60, value);
 }
 
 uint8_t MouseRead()
 {
   MouseWaitInput();
-  return ReadBus(0x60);
+  return inb(0x60);
 }
 
 void InitPS2Mouse()
 {
-  WriteBus(0x64, 0xA8); // Enable aux device - mouse
+  outb(0x64, 0xA8); // Enable aux device - mouse
   MouseWait();
-  WriteBus(0x64, 0x20); // Keyboard controller - talking to mouse
+  outb(0x64, 0x20); // Keyboard controller - talking to mouse
   MouseWaitInput();
 
-  uint8_t status = ReadBus(0x60);
+  uint8_t status = inb(0x60);
   status |= 0b10;
   MouseWait();
-  WriteBus(0x64, 0x60);
+  outb(0x64, 0x60);
   MouseWait();
-  WriteBus(0x60, status); // Setting compaq status byte
+  outb(0x60, status); // Setting compaq status byte
 
   MouseWrite(0xF6); // Setting defaults
   MouseRead();
