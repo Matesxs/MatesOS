@@ -11,7 +11,7 @@ namespace memory
   uint64_t usedPages = 0;
   size_t start_page_count = 0;
 
-  bool InitializeHeap(void *heapAddress, size_t pageCount)
+  bool CreateHeap(void *heapAddress, size_t pageCount)
   {
     if (heapStart != NULL) return false;
 

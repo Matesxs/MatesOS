@@ -115,7 +115,7 @@ void InitializeKernel(BootInfo *bootInfo)
   BasicRenderer::g_Renderer.ClearScreen();
   showSuccess("Memory initialized");
 
-  if (memory::InitializeHeap((void*)0x0000100000000000, 0x10)) showSuccess("Heap initialized");
+  if (memory::CreateHeap((void*)0x0000100000000000, 0x10)) showSuccess("Heap initialized");
   else
   {
     showFailed("Heap initialization failed");
