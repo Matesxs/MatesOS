@@ -8,3 +8,4 @@ void showFailed(const char *message);
 void showInfo(const char *message);
 void printStats(const char *message, uint32_t color=BasicRenderer::BR_DARK_CYAN);
 void statNewLine();
+void ShowStats();

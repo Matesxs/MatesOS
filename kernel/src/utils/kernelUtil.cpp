@@ -1,6 +1,5 @@
 #include "kernelUtil.h"
 #include "../memory/heap.h"
-#include "performance.h"
 #include "../renderer/basic_renderer.h"
 #include "../utils/cstr.h"
 #include "../IO/IO.h"
@@ -114,6 +113,7 @@ void InitializeKernel(BootInfo *bootInfo)
   PrepareMemory(bootInfo);
   BasicRenderer::g_Renderer.ClearScreen();
   showSuccess("Memory initialized");
+  showSuccess("Frame buffer initialized");
 
   if (memory::CreateHeap((void*)0x0000100000000000, 0x10)) showSuccess("Heap initialized");
   else
@@ -137,5 +137,9 @@ void InitializeKernel(BootInfo *bootInfo)
 
   showSuccess("Kernel initialized successfully");
 
+  statNewLine();
+  ShowStats();
+
+  // enable maskable interrupts
   asm ("sti");
 }

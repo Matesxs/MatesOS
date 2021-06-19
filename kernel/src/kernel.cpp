@@ -2,15 +2,12 @@
 #include "renderer/basic_renderer.h"
 #include "memory/heap.h"
 #include "scheduling/pit/pit.h"
-#include "utils/performance.h"
+#include "renderer/stat_logger.h"
 #include "utils/helpers.h"
 
 extern "C" void _start(BootInfo *bootInfo)
 {
   InitializeKernel(bootInfo);
-
-  // Only things needed to run
-  ShowStats(1100, 50);
 
   // // Allocated some random memory
   // void *mem = memory::malloc(sizeof(uint64_t) * 1000000);

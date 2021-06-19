@@ -1,15 +1,18 @@
 all:
 	$(MAKE) bootloader
-	$(MAKE) kernel
+	$(MAKE) image
 
-EFIAPPPATH = gnu-efi/x86_64/bootloader
-EFIAPPFNAME = main.efi
-
-BINDIR = kernel/bin
-STATICSRCDIR = kernel/staticsrc
+.PHONY: init
+init:
+	sudo apt-get install gcc nasm
+	sudo apt-get install qemu qemu-system-common
 
 .PHONY: kernel
 kernel:
+	cd kernel && $(MAKE) kernel
+
+.PHONY: image
+image: bootloader
 	cd kernel && $(MAKE) buildimg
 
 .PHONY: rebuildkernel
