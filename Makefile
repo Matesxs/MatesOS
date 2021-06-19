@@ -3,7 +3,7 @@ all:
 
 .PHONY: init
 init:
-	sudo apt-get install gcc nasm
+	sudo apt-get install gcc nasm gdb
 	sudo apt-get install qemu qemu-system-common
 
 .PHONY: kernel
@@ -40,4 +40,3 @@ run: bootloader
 .PHONY: run_debug
 run_debug: bootloader
 	cd kernel && $(MAKE) run_debug
-

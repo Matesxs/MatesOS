@@ -46,6 +46,7 @@ bootloader - compile bootloader \
 rebuild - clean every compiled file and rebuild whole project \
 clean - clean every compiled file \
 run - compile bootloader, kernel and create image file and run QEMU virtual machine using that image
+run_debug - clean compiled files, add -g flag for C++ compilation, compile bootloader, kernel and create image file and run QEMU virtual machine using that image and wait for gdb to connect on localhost:1234 (dont forgot to load symbol table from kernel/bin/kernel.elf)
 
 ## Screenshots
 ![scr1](media/scr1.jpg?raw=true)
