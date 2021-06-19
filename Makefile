@@ -37,3 +37,7 @@ clean:
 run: bootloader
 	cd kernel && $(MAKE) run
 
+.PHONY: run_debug
+run_debug: bootloader
+	cd kernel && $(MAKE) run_debug
+
