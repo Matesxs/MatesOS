@@ -1,5 +1,4 @@
 all:
-	$(MAKE) bootloader
 	$(MAKE) image
 
 .PHONY: init
@@ -27,8 +26,7 @@ bootloader:
 
 .PHONY: rebuild
 rebuild: clean
-	$(MAKE) bootloader
-	$(MAKE) kernel
+	$(MAKE) all
 
 .PHONY: clean
 clean:
