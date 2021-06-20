@@ -80,6 +80,7 @@ $(SUBDIRS):
 	$(MAKE) -C $(OBJDIR)/$@ -f $(SRCDIR)/$@/Makefile SRCDIR=$(SRCDIR)/$@ ARCH=$(ARCH)
 
 clean:
+	rm -rf x86_64
 	rm -f *~
 	@for d in $(SUBDIRS); do \
 		if [ -d $(OBJDIR)/$$d ]; then \

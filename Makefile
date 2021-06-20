@@ -1,42 +1,55 @@
-all:
-	$(MAKE) image
+OSNAME = MatesOS
+KERNELDIR = kernel
+GNUEFI = gnu-efi
+OVMFDIR = OVMFbin
 
-.PHONY: init
+BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi
+KERNELPATH := $(KERNELDIR)/bin/kernel.elf
+
+.PHONY: init all kernel kernel_debug rebuildkernel image bootloader rebuild clean run run_debug
+
+all: image
+
 init:
 	sudo apt-get install gcc nasm gdb
 	sudo apt-get install qemu qemu-system-common
 
-.PHONY: kernel
 kernel:
 	cd kernel && $(MAKE) kernel
 
-.PHONY: image
-image: bootloader
-	cd kernel && $(MAKE) buildimg
+kernel_debug:
+	cd kernel && $(MAKE) debug
 
-.PHONY: rebuildkernel
+image: bootloader kernel
+	dd if=/dev/zero of=$(OSNAME).img bs=512 count=93750
+	mformat -i $(OSNAME).img -f 1440 ::
+	mmd -i $(OSNAME).img ::/EFI
+	mmd -i $(OSNAME).img ::/EFI/BOOT
+	mmd -i $(OSNAME).img ::/STATIC_SOURCES
+	mmd -i $(OSNAME).img ::/STATIC_SOURCES/FONTS
+	mcopy -i $(OSNAME).img $(BOOTEFI) ::/EFI/BOOT
+	mcopy -i $(OSNAME).img startup.nsh ::
+	mcopy -i $(OSNAME).img $(KERNELPATH) ::
+	mcopy -i $(OSNAME).img static_data/fonts/* ::/STATIC_SOURCES/FONTS
+
 rebuildkernel:
 	cd kernel && $(MAKE) clean
 	$(MAKE) kernel
 
-.PHONY: bootloader
 bootloader:
 	cd gnu-efi && $(MAKE)
 	cd gnu-efi && $(MAKE) bootloader
 
-.PHONY: rebuild
 rebuild: clean
 	$(MAKE) all
 
-.PHONY: clean
 clean:
 	cd gnu-efi && $(MAKE) clean
 	cd kernel && $(MAKE) clean
+	rm -f $(OSNAME).img
 
-.PHONY: run
-run: bootloader
-	cd kernel && $(MAKE) run
+run: image
+	qemu-system-x86_64 -machine q35 -drive file=$(OSNAME).img -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
 
-.PHONY: run_debug
-run_debug: bootloader
-	cd kernel && $(MAKE) run_debug
+run_debug: kernel_debug image
+	qemu-system-x86_64 -s -S -machine q35 -drive file=$(OSNAME).img -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
