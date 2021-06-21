@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include "efiMemory.h"
-#include "memory.h"
 #include "../utils/Bitmap.h"
 #include "../memory/PageFrameAllocator.h"
 #include "../memory/PageMapIndexer.h"

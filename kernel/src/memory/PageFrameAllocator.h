@@ -2,7 +2,6 @@
 #include "../utils/efiMemory.h"
 #include <stdint.h>
 #include "../utils/Bitmap.h"
-#include "../utils/memory.h"
 
 namespace memory
 {

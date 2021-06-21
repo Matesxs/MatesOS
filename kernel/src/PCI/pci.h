@@ -4,7 +4,7 @@
 #include "../acpi/acpi.h"
 #include "../memory/PageTableManager.h"
 #include "../renderer/basic_renderer.h"
-#include "../utils/cstr.h"
+#include "../library/cstr.h"
 
 namespace PCI
 {

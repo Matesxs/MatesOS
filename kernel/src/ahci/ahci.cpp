@@ -4,7 +4,8 @@
 #include "../memory/PageTableManager.h"
 #include "../memory/heap.h"
 #include "../memory/PageFrameAllocator.h"
-#include "../utils/cstr.h"
+#include "../library/cstr.h"
+#include "../library/memset.h"
 
 namespace AHCI
 {
