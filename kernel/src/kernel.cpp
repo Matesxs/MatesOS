@@ -4,11 +4,56 @@
 #include "scheduling/pit/pit.h"
 #include "renderer/stat_logger.h"
 #include "utils/helpers.h"
+#include "library/memory.h"
 
 extern "C" void _start(BootInfo *bootInfo)
 {
   InitializeKernel(bootInfo);
 
+  char *string1 = new char[50];
+  char *string2 = new char[50];
+
+  BasicRenderer::g_Renderer.SetCursor(1000, 100);
+  BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string1));
+  BasicRenderer::g_Renderer.PutChar('\n');
+  BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string2));
+  BasicRenderer::g_Renderer.PutChar('\n');
+
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.Print(string1);
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.PutChar('\n');
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.Print(string2);
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.PutChar('\n');
+
+  memcpy(string1, "Test string 1\0", 14);
+  memcpy(string2, "Test string 2\0", 14);
+
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.Print(string1);
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.PutChar('\n');
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.Print(string2);
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.PutChar('\n');
+
+  memmove(string2, string1, 14);
+
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.Print(string1);
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.PutChar('\n');
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.Print(string2);
+  BasicRenderer::g_Renderer.PutChar('"');
+  BasicRenderer::g_Renderer.PutChar('\n');
+
+  delete [] string1;
+  delete [] string2;
+  
   // // Allocated some random memory
   // void *mem = memory::malloc(sizeof(uint64_t) * 1000000);
   // ShowStats(1100, 250);
