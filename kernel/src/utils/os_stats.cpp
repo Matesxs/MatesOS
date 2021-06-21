@@ -1,6 +1,6 @@
 #include "os_stats.h"
-#include "../memory/PageFrameAllocator.h"
-#include "../memory/heap.h"
+#include "../memory_management/PageFrameAllocator.h"
+#include "../memory_management/heap.h"
 #include "../renderer/basic_renderer.h"
 
 namespace osStats

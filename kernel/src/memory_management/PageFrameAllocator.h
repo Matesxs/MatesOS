@@ -14,6 +14,10 @@ namespace memory
     void FreePages(void *address, uint64_t pageCount);
     void LockPage(void *address);
     void LockPages(void *address, uint64_t pageCount);
+    void ReservePage(void *address);
+    void ReservePages(void *address, uint64_t pageCount);
+    void UnreservePage(void *address);
+    void UnreservePages(void *address, uint64_t pageCount);
     void *RequestPage();
 
     inline uint64_t GetTotalMemory() { return totalMemory; };
@@ -23,10 +27,6 @@ namespace memory
 
   private:
     void InitBitmap(size_t bitmapSize, void *bufferAddress);
-    void ReservePage(void *address);
-    void ReservePages(void *address, uint64_t pageCount);
-    void UnreservePage(void *address);
-    void UnreservePages(void *address, uint64_t pageCount);
 
     uint64_t totalMemory;
     uint64_t freeMemory;

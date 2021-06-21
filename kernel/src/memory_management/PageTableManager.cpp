@@ -3,7 +3,7 @@
 #include "PageTableManager.h"
 #include "PageMapIndexer.h"
 #include "PageFrameAllocator.h"
-#include "../library/memset.h"
+#include "../library/memory.h"
 
 #define ROUND_UP(n, multiple)	((n) % (multiple) == 0 ? (n) : (n) - (n) % (multiple) + (multiple))
 

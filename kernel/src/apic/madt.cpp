@@ -1,7 +1,7 @@
 #include "madt.h"
-#include "../memory/PageTableManager.h"
+#include "../memory_management/PageTableManager.h"
 #include "../renderer/stat_logger.h"
-#include "../library/cstr.h"
+#include "../library/string.h"
 
 namespace APIC
 {

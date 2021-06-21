@@ -1,6 +1,6 @@
 #include "pci.h"
 #include "../ahci/ahci.h"
-#include "../memory/heap.h"
+#include "../memory_management/heap.h"
 #include "../renderer/stat_logger.h"
 #include "../utils/driver.h"
 

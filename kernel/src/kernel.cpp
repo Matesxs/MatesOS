@@ -1,6 +1,6 @@
 #include "utils/kernelUtil.h"
 #include "renderer/basic_renderer.h"
-#include "memory/heap.h"
+#include "memory_management/heap.h"
 #include "scheduling/pit/pit.h"
 #include "renderer/stat_logger.h"
 #include "utils/helpers.h"

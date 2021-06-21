@@ -1,6 +1,6 @@
 #include "stat_logger.h"
-#include "../library/cstr.h"
-#include "../memory/PageFrameAllocator.h"
+#include "../library/string.h"
+#include "../memory_management/PageFrameAllocator.h"
 #include "../utils/os_stats.h"
 
 Point statLoggingCursor = {0, 0};

@@ -1,8 +1,8 @@
 #include "kernelUtil.h"
-#include "../memory/heap.h"
+#include "../memory_management/heap.h"
 #include "../renderer/basic_renderer.h"
-#include "../library/memset.h"
-#include "../library/cstr.h"
+#include "../library/memory.h"
+#include "../library/string.h"
 #include "../IO/IO.h"
 #include "../gdt/gdt.h"
 #include "../interrupts/IDT.h"
@@ -21,7 +21,7 @@ void PrepareMemory(BootInfo *bootInfo)
   uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
   uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1;
 
-  memory::g_Allocator.LockPages(&_KernelStart, kernelPages);
+  memory::g_Allocator.ReservePages(&_KernelStart, kernelPages);
 
   memory::PageTable *PML4 = (memory::PageTable*)memory::g_Allocator.RequestPage();
   memset(PML4, 0, 0x1000);
@@ -35,7 +35,7 @@ void PrepareMemory(BootInfo *bootInfo)
 
   uint64_t fbBase = (uint64_t)bootInfo->framebuffer->BaseAddress;
   uint64_t fbSize = (uint64_t)bootInfo->framebuffer->BufferSize + 0x1000;
-  memory::g_Allocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
+  memory::g_Allocator.ReservePages((void *)fbBase, fbSize / 0x1000 + 1);
   for (uint64_t t = fbBase; t < fbBase + fbSize; t += 4096)
   {
     memory::g_PageTableManager.MapMemory((void *)t, (void *)t);
