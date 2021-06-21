@@ -36,6 +36,12 @@ namespace ACPI
     uint64_t Reserved;
   }__attribute__((packed));
 
+  struct MADTHeader {
+	  SDTHeader	Header;
+	  uint32_t			LocalApicAddress;
+	  uint32_t			Flags;
+  } __attribute__((packed));
+
   struct DeviceConfig
   {
     uint64_t BaseAddress;

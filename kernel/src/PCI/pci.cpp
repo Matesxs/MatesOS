@@ -88,7 +88,7 @@ namespace PCI
   {
     int entries = ((mcfg->Header.Length) - sizeof(ACPI::MCFGHeader)) / sizeof(ACPI::DeviceConfig);
     if (entries == 0) return;
-    showSuccess("PCI Driver initialized");
+    showInfo("PCI Driver initializing");
 
     for (int t = 0; t < entries; t++)
     {
@@ -99,5 +99,7 @@ namespace PCI
         EnumerateBus(newDeviceConfig->BaseAddress, bus);
       }
     }
+
+    showSuccess("PCI Driver initialized");
   }
 }

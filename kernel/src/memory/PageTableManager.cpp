@@ -5,6 +5,8 @@
 #include "PageFrameAllocator.h"
 #include "../library/memset.h"
 
+#define ROUND_UP(n, multiple)	((n) % (multiple) == 0 ? (n) : (n) - (n) % (multiple) + (multiple))
+
 namespace memory
 {
   PageTableManager g_PageTableManager = NULL;
@@ -74,6 +76,20 @@ namespace memory
     PT->entries[indexer.P_i] = PDE;
 
     return virtualMemory;
+  }
+
+  void* PageTableManager::IndentityMapMemory(void *address)
+  {
+    return MapMemory(address, address);
+  }
+
+  void PageTableManager::IndentityMapMemory(void *address, size_t size)
+  {
+    size = ROUND_UP(size, 0x1000);
+    for(void* ptr = address; (uint64_t)ptr < (uint64_t)address + size; ptr = (void*)(uint64_t)ptr + 0x1000) 
+    {
+		  MapMemory(ptr, ptr);
+	  }
   }
 
   void* PageTableManager::WalkMemory(void *virtualMemory)

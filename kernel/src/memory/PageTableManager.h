@@ -1,5 +1,6 @@
 #pragma once
 #include "paging.h"
+#include "stddef.h"
 
 namespace memory
 {
@@ -10,6 +11,8 @@ namespace memory
     PageTable *PML4;
 
     void* MapMemory(void *virtualMemory, void *physicalMemory);
+    void* IndentityMapMemory(void *address);
+    void IndentityMapMemory(void *address, size_t size);
     void* WalkMemory(void *virtualMemory);
     void UnmapMemory(void *virtualMemory);
     void* RemapMemory(void *oldMemory, void *newMemory);

@@ -9,6 +9,7 @@
 #include "../interrupts/interrupts.h"
 #include "../renderer/stat_logger.h"
 #include "helpers.h"
+#include "../apic/madt.h"
 
 void PrepareMemory(BootInfo *bootInfo)
 {
@@ -78,6 +79,21 @@ void PrepareInterrupts()
   showSuccess("Interrupts initialized");
 }
 
+void InitAPIC(ACPI::SDTHeader *xsdt)
+{
+  ACPI::MADTHeader *madt = (ACPI::MADTHeader*)ACPI::FindTable(xsdt, (char*)"APIC");
+  if (madt == nullptr)
+  {
+    showFailed("MADT Header not found");
+  }
+  else
+  {
+    showSuccess("MADT Header found");
+    io_apic_enable();
+    if (!APIC::MADTInit(madt)) return;
+  }
+}
+
 void PrepareACPI(BootInfo *bootInfo)
 {
   ACPI::SDTHeader *xsdt = (ACPI::SDTHeader*)(bootInfo->rsdp->XSDTAddress);
@@ -92,13 +108,14 @@ void PrepareACPI(BootInfo *bootInfo)
   if (mcfg == nullptr)
   {
     showFailed("MCFG Header not found");
-    return;
   }
   else
   {
     showSuccess("MCFG Header found");
     PCI::EnumeratePCI(mcfg);
   }
+
+  InitAPIC(xsdt);
 }
 
 void InitializeKernel(BootInfo *bootInfo)

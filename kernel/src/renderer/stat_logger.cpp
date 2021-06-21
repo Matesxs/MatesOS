@@ -169,6 +169,29 @@ void showFailed(const char *message)
   BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
+void showWarning(const char *message)
+{
+  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
+  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
+  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
+
+  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
+
+  BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
+  BasicRenderer::g_Renderer.Print("[ ");
+  BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_YELLOW);
+  BasicRenderer::g_Renderer.Print("WARN");
+  BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
+  BasicRenderer::g_Renderer.Print(" ] ");
+  BasicRenderer::g_Renderer.Print(message);
+  BasicRenderer::g_Renderer.NewLine();
+
+  BasicRenderer::g_Renderer.SetColor(tmpColor);
+  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
+  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
+  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
+}
+
 void showInfo(const char *message)
 {
   uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
