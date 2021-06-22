@@ -6,7 +6,7 @@ OVMFDIR = OVMFbin
 BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi
 KERNELPATH := $(KERNELDIR)/bin/kernel.elf
 
-.PHONY: init all kernel kernel_debug rebuildkernel image bootloader rebuild clean cleanimages run runonly run_debug run_debug_only
+.PHONY: init all kernel kernel_debug rebuildkernel image bootloader rebuild clean cleanimages run run_only run_debug
 
 all: image
 
@@ -59,13 +59,11 @@ $(OVMFDIR):
 	git clone git@github.com:Matesxs/OVMFbin.git
 
 run: OVMFbin image
-	$(MAKE) runonly
+	$(MAKE) run_only
 
 run_only:
 	qemu-system-x86_64 -smp 2 -machine q35 -drive file=$(OSNAME).img,format=raw -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
 
 run_debug: OVMFbin kernel_debug image
-	$(MAKE) run_debug_only
-
-run_debug_only:
 	qemu-system-x86_64 -s -S -smp 2 -machine q35 -drive file=$(OSNAME).img,format=raw -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
+	
