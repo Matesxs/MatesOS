@@ -99,15 +99,15 @@ void PrepareACPI(BootInfo *bootInfo)
   ACPI::SDTHeader *xsdt = (ACPI::SDTHeader*)(bootInfo->rsdp->XSDTAddress);
   if (xsdt == nullptr)
   {
-    showFailed("SDT Header not found");
-    return;
+    showFailed("XSDT Header not found - cant init APIC");
+    halt();
   }
-  else showSuccess("SDT Header found");
+  else showSuccess("XSDT Header found");
 
   ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader*)ACPI::FindTable(xsdt, (char*)"MCFG");
   if (mcfg == nullptr)
   {
-    showFailed("MCFG Header not found");
+    showWarning("MCFG Header not found - skipping initialization of PCI driver");
   }
   else
   {
