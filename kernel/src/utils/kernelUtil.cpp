@@ -45,9 +45,10 @@ void PrepareMemory(BootInfo *bootInfo)
 }
 
 IDTR idtr;
+IDTDescEntry idt_entries[256];
 void SetIDTGate(void* handler, uint8_t entryOffset, uint8_t type_attr, uint8_t selector)
 {
-  IDTDescEntry *interrupt = (IDTDescEntry*)(idtr.Offset + entryOffset * sizeof(IDTDescEntry));
+  IDTDescEntry *interrupt = (IDTDescEntry*)(idtr.Base + entryOffset * sizeof(IDTDescEntry));
   interrupt->SetOffset((uint64_t)handler);
   interrupt->Type_Attr = type_attr;
   interrupt->Selector = selector;
@@ -55,15 +56,8 @@ void SetIDTGate(void* handler, uint8_t entryOffset, uint8_t type_attr, uint8_t s
 
 void PrepareInterrupts()
 {
-  idtr.Limit = 0x0fff;
-  void *newPage = memory::g_Allocator.RequestPage();
-  if (newPage == NULL)
-  {
-    showFailed("Interrupts memory allocation failed");
-    halt();
-  }
-
-  idtr.Offset = (uint64_t)newPage;
+  idtr.Limit = sizeof(IDTDescEntry) * 256 - 1;
+  idtr.Base = (uint64_t)&idt_entries;
 
   SetIDTGate((void*)PageFault_Handler, 0xE, IDT_TA_InterruptGate, 0x08);
   SetIDTGate((void*)DoubleFault_Handler, 0x8, IDT_TA_InterruptGate, 0x08);
@@ -77,6 +71,14 @@ void PrepareInterrupts()
   RemapPIC();
 
   showSuccess("Interrupts initialized");
+  printStatsSpacing();
+  printStats("Base address: 0x");
+  printStats(to_hstring(idtr.Base));
+  statNewLine();
+  printStatsSpacing();
+  printStats("Limit: ");
+  printStats(to_string((uint64_t)idtr.Limit));
+  statNewLine();
 }
 
 void InitAPIC(ACPI::SDTHeader *xsdt)
@@ -89,8 +91,8 @@ void InitAPIC(ACPI::SDTHeader *xsdt)
   else
   {
     showSuccess("MADT Header found");
-    io_apic_enable();
     if (!APIC::MADTInit(madt)) return;
+    // io_apic_enable();
   }
 }
 
@@ -133,7 +135,8 @@ void InitializeKernel(BootInfo *bootInfo)
   showSuccess("Memory initialized");
   showSuccess("Frame buffer initialized");
 
-  if (memory::CreateHeap((void*)0x0000100000000000, 0x10)) showSuccess("Heap initialized");
+  if (memory::CreateHeap((void*)0x0000100000000000, 0x10)) 
+    showSuccess("Heap initialized");
   else
   {
     showFailed("Heap initialization failed");
@@ -156,7 +159,7 @@ void InitializeKernel(BootInfo *bootInfo)
   showSuccess("Kernel initialized successfully");
 
   statNewLine();
-  ShowStats();
+  ShowOSStats();
 
   // enable maskable interrupts
   asm ("sti");

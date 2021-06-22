@@ -13,7 +13,4 @@ namespace APIC
 	  void* stack_ptr;
 	  size_t stack_size;
   };
-
-  // Initializes the bootstrap processor
-  void local_apic_init();
 }

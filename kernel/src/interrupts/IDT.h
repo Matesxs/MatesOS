@@ -23,5 +23,5 @@ struct IDTDescEntry
 struct IDTR
 {
   uint16_t Limit;
-  uint64_t Offset;
+  uint64_t Base;
 }__attribute__((packed));

@@ -99,7 +99,7 @@ void ShowRAM()
   sizePrint(osStats::reservedRam);
 }
 
-void ShowStats()
+void ShowOSStats()
 {
   uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
   uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
@@ -221,6 +221,23 @@ void printStats(const char *message, uint32_t color)
 
   BasicRenderer::g_Renderer.SetColor(color);
   BasicRenderer::g_Renderer.Print(message);
+
+  BasicRenderer::g_Renderer.SetColor(tmpColor);
+  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
+  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
+  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
+}
+
+void printStatsSpacing(uint32_t color)
+{
+  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
+  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
+  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
+
+  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
+
+  BasicRenderer::g_Renderer.SetColor(color);
+  BasicRenderer::g_Renderer.Print("   - ");
 
   BasicRenderer::g_Renderer.SetColor(tmpColor);
   statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
