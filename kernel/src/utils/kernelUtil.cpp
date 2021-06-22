@@ -158,7 +158,7 @@ void InitializeKernel(BootInfo *bootInfo)
   showSuccess("Memory initialized");
   showSuccess("Frame buffer initialized");
 
-  if (memory::CreateHeap((void*)0x0000100000000000, 0x10)) 
+  if (memory::CreateHeap((void*)0x0000100000000000, 0x10))
     showSuccess("Heap initialized");
   else
   {

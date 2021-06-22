@@ -3,6 +3,8 @@
 #include "../memory_management/heap.h"
 #include "../renderer/stat_logger.h"
 #include "../utils/driver.h"
+#include "../utils/helpers.h"
+#include "../utils/panic.h"
 
 namespace PCI
 {
@@ -86,9 +88,17 @@ namespace PCI
 
   void EnumeratePCI(ACPI::MCFGHeader *mcfg)
   {
-    int entries = ((mcfg->Header.Length) - sizeof(ACPI::MCFGHeader)) / sizeof(ACPI::DeviceConfig);
-    if (entries == 0) return;
     showInfo("PCI Driver initializing");
+
+    if (checksum((char*)&mcfg->Header, mcfg->Header.Length)) Panic("Failed SDT header checksum in MCFG header");
+    if (mcfg->Header.Length < sizeof(ACPI::SDTHeader)) Panic("Impossible size of SDT header in MCFG header");
+
+    int entries = ((mcfg->Header.Length) - sizeof(ACPI::MCFGHeader)) / sizeof(ACPI::DeviceConfig);
+    if (entries == 0)
+    {
+      showWarning("No PCI buses found");
+      return;
+    }
 
     for (int t = 0; t < entries; t++)
     {

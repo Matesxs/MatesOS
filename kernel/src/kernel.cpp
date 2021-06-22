@@ -12,6 +12,9 @@ extern "C" void _start(BootInfo *bootInfo)
 {
   InitializeKernel(bootInfo);
 
+  PIT::SetDivisor(50);
+  PIT::Sleep(10000);
+
   // char *string1 = new char[50];
   // char *string2 = new char[50];
 

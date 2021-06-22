@@ -2,6 +2,8 @@
 #include "../memory_management/PageTableManager.h"
 #include "../renderer/stat_logger.h"
 #include "../library/string.h"
+#include "../utils/helpers.h"
+#include "../utils/panic.h"
 
 namespace APIC
 {
@@ -14,13 +16,16 @@ namespace APIC
 
   bool MADTInit(ACPI::MADTHeader* madt)
   {
+    showInfo("MADT Initializing");
+
+    if (checksum((char*)&madt->Header, madt->Header.Length)) Panic("Failed SDT header checksum in MADT header");
+    if (madt->Header.Length < sizeof(ACPI::SDTHeader)) Panic("Impossible size of SDT header in MADT header");
+
     s_madt = madt;
     memory::g_PageTableManager.IndentityMapMemory((void*)madt, madt->Header.Length);
 
     void* local_apic_ptr = (void*)(uint64_t)madt->LocalApicAddress;
     size_t t = 0;
-
-    showInfo("MADT Initializing");
 
     while (t < madt->Header.Length - sizeof(ACPI::MADTHeader))
     {

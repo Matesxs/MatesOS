@@ -3,6 +3,7 @@
 #include "../library/memory.h"
 #include "../renderer/stat_logger.h"
 #include "../utils/panic.h"
+#include "../utils/helpers.h"
 
 namespace ACPI
 {
@@ -20,22 +21,12 @@ namespace ACPI
     return nullptr;
   }
 
-  uint8_t checksum(const char* addr, size_t size) noexcept
-  {
-    const char* end = addr + size;
-    uint8_t sum = 0;
-    while (addr < end) {
-      sum += *addr; addr++;
-    }
-    return sum;
-  }
-
   int EnumACPI(SDTHeader *sdtHeader)
   {
     showInfo("Enumerating ACPI");
 
-    if (checksum((char*)sdtHeader, sdtHeader->Length) != 0) Panic("Failed SDT header checksum");
-    if (sdtHeader->Length < sizeof(SDTHeader)) Panic("Impossible size of SDT header");
+    if (checksum((char*)sdtHeader, sdtHeader->Length) != 0) Panic("Failed SDT header checksum (XSDT)");
+    if (sdtHeader->Length < sizeof(SDTHeader)) Panic("Impossible size of SDT header (XSDT)");
 
     int entries = (sdtHeader->Length - sizeof(ACPI::SDTHeader)) / 8;
     if (entries > 0)
