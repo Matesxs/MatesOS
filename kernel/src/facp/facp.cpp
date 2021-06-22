@@ -136,7 +136,7 @@ namespace FACP
   __attribute__((noreturn))
   void Reboot()
   {
-    if (reset_flag && g_FACPHeader->RESET_REG.AddressSpace)
+    if (reset_flag && g_FACPHeader->RESET_REG.AddressSpace == 1)
     {
       outb(g_FACPHeader->RESET_REG.Address, g_FACPHeader->RESET_VALUE);
     }

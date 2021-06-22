@@ -56,10 +56,10 @@ extern "C" void _start(BootInfo *bootInfo)
   delete [] string1;
   delete [] string2;
 
-  // PIT::SetDivisor(60);
-  // PIT::Sleep(10000);
+  PIT::SetDivisor(60);
+  PIT::Sleep(10000);
 
-  // FACP::Reboot();
+  FACP::Reboot();
   // FACP::Shutdown();
   
   // // Allocated some random memory
