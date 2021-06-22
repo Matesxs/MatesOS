@@ -3,4 +3,5 @@
 *.img
 *.hdd
 *.iso
+*.lock
 OVMFbin/
