@@ -1,5 +1,6 @@
 #include "facp.h"
 #include "../library/string.h"
+#include "../library/memory.h"
 #include "../renderer/stat_logger.h"
 #include "../IO/IO.h"
 #include "../memory_management/PageTableManager.h"
@@ -46,7 +47,7 @@ namespace FACP
 
     while (dsdtLength-- > 0)
     {
-      if (strcmp(S5Addr, "_S5_", 4) == 0)
+      if (memcmp(S5Addr, "_S5_", 4) == 0)
         break;
       S5Addr++;
     }
@@ -87,9 +88,8 @@ namespace FACP
     else
     {
       showWarning("FACP Failed to parse _S5");
+      SCI_EN = 0;
     }
-
-    SCI_EN = 0;
 
     showSuccess("FACP Initialized");
 
@@ -140,5 +140,7 @@ namespace FACP
     {
       outb(g_FACPHeader->RESET_REG.Address, g_FACPHeader->RESET_VALUE);
     }
+
+    while (true) asm ("cli; hlt");
   }
 }
