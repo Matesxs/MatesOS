@@ -11,6 +11,7 @@
 #include "helpers.h"
 #include "../apic/madt.h"
 #include "../facp/facp.h"
+#include "../utils/panic.h"
 
 void PrepareMemory(BootInfo *bootInfo)
 {
@@ -87,7 +88,7 @@ void InitAPIC(ACPI::SDTHeader *xsdt)
   ACPI::MADTHeader *madt = (ACPI::MADTHeader*)ACPI::FindTable(xsdt, (char*)"APIC");
   if (madt == nullptr)
   {
-    showFailed("MADT Header not found - no APIC support!");
+    Panic("MADT Header not found - no APIC support!");
   }
   else
   {
@@ -102,15 +103,14 @@ void PrepareACPI(BootInfo *bootInfo)
   ACPI::SDTHeader *xsdt = (ACPI::SDTHeader*)(bootInfo->rsdp->XSDTAddress);
   if (xsdt == nullptr)
   {
-    showFailed("XSDT Header (ACPI) not found");
-    halt();
+    Panic("XSDT Header (ACPI) not found");
   }
   else showSuccess("XSDT Header (ACPI) found");
 
   // Enumerate all headers in ACPI
   if (!ACPI::EnumACPI(xsdt))
   {
-    showWarning("No ACPI headers found");
+    Panic("No ACPI headers found");
     return;
   }
 
@@ -132,7 +132,7 @@ void PrepareACPI(BootInfo *bootInfo)
   ACPI::FACPHeader *facp = (ACPI::FACPHeader*)ACPI::FindTable(xsdt, (char*)"FACP");
   if (facp == nullptr)
   {
-    showWarning("FACP Header not found - no advanced functions");
+    Panic("FACP Header not found");
   }
   else
   {
