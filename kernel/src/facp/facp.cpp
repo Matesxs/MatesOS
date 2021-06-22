@@ -136,9 +136,26 @@ namespace FACP
   __attribute__((noreturn))
   void Reboot()
   {
-    if (reset_flag && g_FACPHeader->RESET_REG.AddressSpace == 1)
+    // Check if reset via FADT RESET_REG is supported
+    if (reset_flag)
     {
-      outb(g_FACPHeader->RESET_REG.Address, g_FACPHeader->RESET_VALUE);
+      switch (g_FACPHeader->RESET_REG.AddressSpace)
+      {
+        case ACPI::IO:
+          outb(g_FACPHeader->RESET_REG.Address, g_FACPHeader->RESET_VALUE);
+          break;
+
+        case ACPI::MMIO:
+          *((volatile uint8_t *) ((uintptr_t)g_FACPHeader->RESET_REG.Address)) = g_FACPHeader->RESET_VALUE;
+          break;
+
+        case ACPI::PCI:
+          // TODO: Implement
+          break;
+      
+        default:
+          break;
+      }
     }
 
     while (true) asm ("cli; hlt");

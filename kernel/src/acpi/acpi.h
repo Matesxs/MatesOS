@@ -4,6 +4,13 @@
 
 namespace ACPI
 {
+  enum AddressSpaceEnum
+  {
+    MMIO = 0,
+    IO = 1,
+    PCI = 2,
+  };
+
   struct AddressStructure
   {
     uint8_t AddressSpace;
