@@ -25,6 +25,7 @@ namespace driver
     void add_driver(Driver *driver);
     void activate_all();
     Driver *get_by_index(uint64_t index);
+    uint64_t get_num_of_drivers();
   };
 
   extern DriverManager g_DriverManager;

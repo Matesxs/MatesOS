@@ -6,7 +6,7 @@ OVMFDIR = OVMFbin
 BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi
 KERNELPATH := $(KERNELDIR)/bin/kernel.elf
 
-.PHONY: init all kernel kernel_debug rebuildkernel image bootloader rebuild clean run run_debug
+.PHONY: init all kernel kernel_debug rebuildkernel image bootloader rebuild clean cleanimages run run_debug
 
 all: image
 
@@ -20,7 +20,7 @@ kernel:
 kernel_debug:
 	cd kernel && $(MAKE) debug
 
-image: bootloader kernel
+image: cleanimages bootloader kernel
 	dd if=/dev/zero of=$(OSNAME).img bs=512 count=93750
 	mformat -i $(OSNAME).img -f 1440 ::
 	mmd -i $(OSNAME).img ::/EFI
@@ -33,6 +33,8 @@ image: bootloader kernel
 	mcopy -i $(OSNAME).img static_data/fonts/* ::/STATIC_SOURCES/FONTS
 	cp $(OSNAME).img $(OSNAME).hdd
 
+rebuildimage: rebuildkernel image
+
 rebuildkernel:
 	cd kernel && $(MAKE) clean
 	$(MAKE) kernel
@@ -44,11 +46,13 @@ bootloader:
 rebuild: clean
 	$(MAKE) all
 
-clean:
-	cd gnu-efi && $(MAKE) clean
-	cd kernel && $(MAKE) clean
+cleanimages:
 	rm -f $(OSNAME).img
 	rm -f $(OSNAME).hdd
+
+clean: cleanimages
+	cd gnu-efi && $(MAKE) clean
+	cd kernel && $(MAKE) clean
 	rm -rf $(OVMFDIR)
 
 $(OVMFDIR):

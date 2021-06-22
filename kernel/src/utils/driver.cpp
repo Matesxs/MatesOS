@@ -56,4 +56,9 @@ namespace driver
     if (index > (num_of_drivers - 1)) return NULL;
     return drivers[index];
   }
+
+  uint64_t DriverManager::get_num_of_drivers()
+  {
+    return num_of_drivers;
+  }
 }

@@ -12,54 +12,54 @@ extern "C" void _start(BootInfo *bootInfo)
 {
   InitializeKernel(bootInfo);
 
-  char *string1 = new char[50];
-  char *string2 = new char[50];
+  // char *string1 = new char[50];
+  // char *string2 = new char[50];
 
-  BasicRenderer::g_Renderer.SetCursor(1000, 100);
-  BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string1));
-  BasicRenderer::g_Renderer.PutChar('\n');
-  BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string2));
-  BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.SetCursor(1000, 100);
+  // BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string1));
+  // BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string2));
+  // BasicRenderer::g_Renderer.PutChar('\n');
 
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.Print(string1);
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.PutChar('\n');
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.Print(string2);
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.Print(string1);
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.Print(string2);
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.PutChar('\n');
 
-  memcpy(string1, "Test string 1\0", 14);
-  memcpy(string2, "Test string 2\0", 14);
+  // memcpy(string1, "Test string 1\0", 14);
+  // memcpy(string2, "Test string 2\0", 14);
 
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.Print(string1);
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.PutChar('\n');
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.Print(string2);
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.Print(string1);
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.Print(string2);
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.PutChar('\n');
 
-  memmove(string2, string1, 14);
+  // memmove(string2, string1, 14);
 
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.Print(string1);
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.PutChar('\n');
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.Print(string2);
-  BasicRenderer::g_Renderer.PutChar('"');
-  BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.Print(string1);
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.PutChar('\n');
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.Print(string2);
+  // BasicRenderer::g_Renderer.PutChar('"');
+  // BasicRenderer::g_Renderer.PutChar('\n');
 
-  delete [] string1;
-  delete [] string2;
+  // delete [] string1;
+  // delete [] string2;
 
-  PIT::SetDivisor(60);
-  PIT::Sleep(10000);
+  // PIT::SetDivisor(60);
+  // PIT::Sleep(10000);
 
-  FACP::Reboot();
+  // FACP::Reboot();
   // FACP::Shutdown();
   
   // // Allocated some random memory

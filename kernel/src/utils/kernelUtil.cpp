@@ -22,7 +22,7 @@ void PrepareMemory(BootInfo *bootInfo)
   uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
   uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1;
 
-  memory::g_Allocator.ReservePages(&_KernelStart, kernelPages);
+  memory::g_Allocator.LockPages(&_KernelStart, kernelPages);
 
   memory::PageTable *PML4 = (memory::PageTable*)memory::g_Allocator.RequestPage();
   memset(PML4, 0, 0x1000);
@@ -36,7 +36,7 @@ void PrepareMemory(BootInfo *bootInfo)
 
   uint64_t fbBase = (uint64_t)bootInfo->framebuffer->BaseAddress;
   uint64_t fbSize = (uint64_t)bootInfo->framebuffer->BufferSize + 0x1000;
-  memory::g_Allocator.ReservePages((void *)fbBase, fbSize / 0x1000 + 1);
+  memory::g_Allocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
   for (uint64_t t = fbBase; t < fbBase + fbSize; t += 4096)
   {
     memory::g_PageTableManager.MapMemory((void *)t, (void *)t);
@@ -122,6 +122,10 @@ void PrepareACPI(BootInfo *bootInfo)
   else
   {
     showSuccess("MCFG Header found");
+    // printStatsSpacing();
+    // printStats("Address: 0x");
+    // printStats(to_hstring((uint64_t)mcfg));
+    // statNewLine();
     PCI::EnumeratePCI(mcfg);
   }
 
@@ -173,7 +177,21 @@ void InitializeKernel(BootInfo *bootInfo)
   PrepareACPI(bootInfo);
 
   // Load all drivers
-  driver::g_DriverManager.activate_all();
+  uint64_t num_of_drivers = driver::g_DriverManager.get_num_of_drivers();
+  if (num_of_drivers > 0)
+  {
+    showInfo("Loading drivers");
+    printStatsSpacing();
+    printStats(to_string(num_of_drivers));
+    printStats(" drivers to load");
+    statNewLine();
+
+    driver::g_DriverManager.activate_all();
+  }
+  else
+  {
+    showWarning("No drivers to load");
+  }
 
   showSuccess("Kernel initialized successfully");
 

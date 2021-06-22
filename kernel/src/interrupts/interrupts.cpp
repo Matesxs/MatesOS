@@ -1,5 +1,5 @@
 #include "interrupts.h"
-#include "panic.h"
+#include "../utils/panic.h"
 #include "../IO/IO.h"
 #include "../userinput/keyboard.h"
 #include "../scheduling/pit/pit.h"
