@@ -88,11 +88,11 @@ void InitAPIC(ACPI::SDTHeader *xsdt)
   ACPI::MADTHeader *madt = (ACPI::MADTHeader*)ACPI::FindTable(xsdt, (char*)"APIC");
   if (madt == nullptr)
   {
-    Panic("MADT Header not found - no APIC support!");
+    Panic("MADT Table not found - no APIC support!");
   }
   else
   {
-    showSuccess("MADT Header found");
+    showSuccess("MADT Table found");
     if (!APIC::MADTInit(madt)) return;
     // io_apic_enable();
   }
@@ -103,9 +103,9 @@ void PrepareACPI(BootInfo *bootInfo)
   ACPI::SDTHeader *xsdt = (ACPI::SDTHeader*)(bootInfo->rsdp->XSDTAddress);
   if (xsdt == nullptr)
   {
-    Panic("XSDT Header (ACPI) not found");
+    Panic("XSDT Table (ACPI) not found");
   }
-  else showSuccess("XSDT Header (ACPI) found");
+  else showSuccess("XSDT Table (ACPI) found");
 
   // Enumerate all headers in ACPI
   if (!ACPI::EnumACPI(xsdt))
@@ -117,11 +117,11 @@ void PrepareACPI(BootInfo *bootInfo)
   ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader*)ACPI::FindTable(xsdt, (char*)"MCFG");
   if (mcfg == nullptr)
   {
-    showWarning("MCFG Header not found - skipping initialization of PCI driver");
+    showWarning("MCFG Table not found - skipping initialization of PCI driver");
   }
   else
   {
-    showSuccess("MCFG Header found");
+    showSuccess("MCFG Table found");
     // printStatsSpacing();
     // printStats("Address: 0x");
     // printStats(to_hstring((uint64_t)mcfg));
@@ -132,11 +132,11 @@ void PrepareACPI(BootInfo *bootInfo)
   ACPI::FACPHeader *facp = (ACPI::FACPHeader*)ACPI::FindTable(xsdt, (char*)"FACP");
   if (facp == nullptr)
   {
-    Panic("FACP Header not found");
+    Panic("FACP Table not found");
   }
   else
   {
-    showSuccess("FACP Header found");
+    showSuccess("FACP Table found");
     FACP::InitFACP(facp);
   }
 
