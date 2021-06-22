@@ -1,5 +1,7 @@
 #include "PageFrameAllocator.h"
 
+#define DEBUG
+
 namespace memory
 {
   bool Initialized = false;
@@ -20,7 +22,7 @@ namespace memory
     for (uint64_t i = 0; i < mMapEntries; i++)
     {
       EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
-      if (desc->type == 7)
+      if (desc->type == EfiConventionalMemory)
       {
         if (desc->numPages * 4096 > largestFreeMemSegSize)
         {
@@ -40,7 +42,7 @@ namespace memory
     for (uint64_t i = 0; i < mMapEntries; i++)
     {
       EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
-      if (desc->type == 7)
+      if (desc->type == EfiConventionalMemory)
       {
         UnreservePages(desc->physAddr, desc->numPages);
       }

@@ -9,6 +9,7 @@ namespace QWERTYKeyboard
   #define Enter 0x1C
   #define BackSpace 0x0E
   #define Spacebar 0x39
+  #define Escape 0x01
 
   extern const char ASCIITable[];
   char Translate(uint8_t scancode, bool uppercase);

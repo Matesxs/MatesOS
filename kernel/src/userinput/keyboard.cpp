@@ -1,4 +1,5 @@
 #include "keyboard.h"
+#include "../facp/facp.h"
 
 bool isLeftShiftPressed = false;
 bool isRightShiftPressed = false;
@@ -20,6 +21,10 @@ void HandleKeyboard(uint8_t scancode)
 
     case RightShift + 0x80:
       isRightShiftPressed = false;
+      return;
+
+    case Escape:
+      FACP::Shutdown();
       return;
 
     case Enter:
