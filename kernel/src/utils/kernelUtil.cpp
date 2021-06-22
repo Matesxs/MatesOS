@@ -10,6 +10,7 @@
 #include "../renderer/stat_logger.h"
 #include "helpers.h"
 #include "../apic/madt.h"
+#include "../facp/facp.h"
 
 void PrepareMemory(BootInfo *bootInfo)
 {
@@ -86,7 +87,7 @@ void InitAPIC(ACPI::SDTHeader *xsdt)
   ACPI::MADTHeader *madt = (ACPI::MADTHeader*)ACPI::FindTable(xsdt, (char*)"APIC");
   if (madt == nullptr)
   {
-    showFailed("MADT Header not found");
+    showFailed("MADT Header not found - no APIC support!");
   }
   else
   {
@@ -101,10 +102,17 @@ void PrepareACPI(BootInfo *bootInfo)
   ACPI::SDTHeader *xsdt = (ACPI::SDTHeader*)(bootInfo->rsdp->XSDTAddress);
   if (xsdt == nullptr)
   {
-    showFailed("XSDT Header not found - cant init APIC");
+    showFailed("XSDT Header (ACPI) not found");
     halt();
   }
-  else showSuccess("XSDT Header found");
+  else showSuccess("XSDT Header (ACPI) found");
+
+  // Enumerate all headers in ACPI
+  if (!ACPI::EnumACPI(xsdt))
+  {
+    showWarning("No ACPI headers found");
+    return;
+  }
 
   ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader*)ACPI::FindTable(xsdt, (char*)"MCFG");
   if (mcfg == nullptr)
@@ -115,6 +123,17 @@ void PrepareACPI(BootInfo *bootInfo)
   {
     showSuccess("MCFG Header found");
     PCI::EnumeratePCI(mcfg);
+  }
+
+  ACPI::FACPHeader *facp = (ACPI::FACPHeader*)ACPI::FindTable(xsdt, (char*)"FACP");
+  if (facp == nullptr)
+  {
+    showWarning("FACP Header not found - no advanced functions");
+  }
+  else
+  {
+    showSuccess("FACP Header found");
+    FACP::InitFACP(facp);
   }
 
   InitAPIC(xsdt);

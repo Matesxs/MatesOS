@@ -6,6 +6,8 @@
 #include "utils/helpers.h"
 #include "library/memory.h"
 
+#include "facp/facp.h"
+
 extern "C" void _start(BootInfo *bootInfo)
 {
   InitializeKernel(bootInfo);
@@ -53,6 +55,12 @@ extern "C" void _start(BootInfo *bootInfo)
 
   delete [] string1;
   delete [] string2;
+
+  // PIT::SetDivisor(60);
+  // PIT::Sleep(10000);
+
+  // FACP::Reboot();
+  // FACP::Shutdown();
   
   // // Allocated some random memory
   // void *mem = memory::malloc(sizeof(uint64_t) * 1000000);

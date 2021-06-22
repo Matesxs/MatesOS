@@ -86,7 +86,7 @@ namespace memory
   void PageTableManager::IndentityMapMemory(void *address, size_t size)
   {
     size = ROUND_UP(size, 0x1000);
-    for(void* ptr = address; (uint64_t)ptr < (uint64_t)address + size; ptr = (void*)(uint64_t)ptr + 0x1000) 
+    for(void* ptr = address; (uint64_t)ptr < (uint64_t)address + size; ptr = (void*)((uint64_t)ptr + 0x1000)) 
     {
 		  MapMemory(ptr, ptr);
 	  }

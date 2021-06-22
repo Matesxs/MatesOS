@@ -1,4 +1,5 @@
 #include "to_string.h"
+#include "stddef.h"
 
 char hexTo_StringOutput[128];
 const char *to_hstring(uint64_t value)
@@ -176,4 +177,39 @@ const char *to_string(double value, uint8_t decimalPlaces)
 const char *to_string(double value)
 {
   return to_string(value, 2);
+}
+
+const char Digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+const size_t DigitsSize = sizeof(Digits) - 1;
+
+char toString_convertOutput[128];
+const char* to_string_convert(uint64_t value, uint64_t base)
+{
+  if (base < 2 || base > DigitsSize)
+  {
+    toString_convertOutput[0] = 0;
+    return toString_convertOutput;
+  }
+
+  char buffer[128] = {};
+  char* p = buffer + 128;
+
+  int i = 0;
+  while (value != 0) 
+  {
+    *(--p) = Digits[value % base];
+    value /= base;
+    i++;
+  }
+
+  char *fb = toString_convertOutput;
+  while (i)
+  {
+    *fb = *p;
+    fb++;
+    p++;
+    i--;
+  }
+
+  return toString_convertOutput;
 }
