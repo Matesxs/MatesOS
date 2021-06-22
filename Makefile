@@ -61,7 +61,7 @@ $(OVMFDIR):
 run: OVMFbin image
 	$(MAKE) run_only
 
-run_only:
+run_only: OVMFbin
 	qemu-system-x86_64 -smp 2 -machine q35 -drive file=$(OSNAME).img,format=raw -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
 
 run_debug: OVMFbin kernel_debug image
