@@ -2,6 +2,7 @@
 #include "driver.h"
 #include "../renderer/stat_logger.h"
 #include "../utils/helpers.h"
+#include "../library/string.h"
 
 namespace driver
 {
@@ -23,8 +24,13 @@ namespace driver
 
   void DriverManager::activate_all()
   {
-    showInfo("Loading drivers");
     bool failed = false;
+
+    showInfo("Loading drivers");
+    printStatsSpacing();
+    printStats(to_string(num_of_drivers));
+    printStats(" drivers to load");
+    statNewLine();
 
     for (uint64_t i = 0; i < num_of_drivers; i++)
     {
@@ -34,11 +40,7 @@ namespace driver
       }
     }
 
-    if (failed)
-    {
-      showFailed("Drivers load failed");
-      halt();
-    }
+    if (failed) showWarning("Drivers load failed");
     else showSuccess("Drivers loaded");
   }
 

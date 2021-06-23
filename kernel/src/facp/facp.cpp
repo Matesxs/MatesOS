@@ -4,6 +4,7 @@
 #include "../renderer/stat_logger.h"
 #include "../IO/IO.h"
 #include "../memory_management/PageTableManager.h"
+#include "../utils/panic.h"
 
 namespace FACP
 {
@@ -130,7 +131,9 @@ namespace FACP
 
     const char* s = "Shutdown";
     while (*s) outb (0x8900, *(s++));
-    while (true) asm ("cli; hlt");
+
+    __unreachable_code();
+    while (true) asm ("hlt");
   }
 
   __attribute__((noreturn))
@@ -158,6 +161,7 @@ namespace FACP
       }
     }
 
-    while (true) asm ("cli; hlt");
+    __unreachable_code();
+    while (true) asm ("hlt");
   }
 }

@@ -38,7 +38,7 @@ namespace APIC
         {
           MADTLocalProcessor *localProcessor = (MADTLocalProcessor*)record;
 
-          s_madt_info.processors[s_madt_info.processors_num] = LocalAPICProcessor{.local_processor = localProcessor};
+          s_madt_info.processors[s_madt_info.processors_num].local_processor = localProcessor;
           s_madt_info.processors_num++;
           break;
         }
@@ -99,7 +99,7 @@ namespace APIC
       showSuccess("MADT Initialized");
       printStats("   - ");
       printStats("Bootstrap processor APIC Address: 0x");
-      printStats(to_hstring((uint64_t)local_apic_ptr));
+      printStats(to_hstring((uint64_t)s_madt_info.local_apic_ptr));
       statNewLine();
       return true;
     }

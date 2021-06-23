@@ -162,7 +162,7 @@ void InitializeKernel(BootInfo *bootInfo)
   PrepareMemory(bootInfo);
   showSuccess("Memory initialized");
 
-  memory::CreateHeap((void*)0x0000100000000000, 0x10);
+  memory::CreateHeap((void*)0x0000100000000000, 0x20);
   showSuccess("Heap initialized");
 
   PrepareInterrupts();
@@ -176,21 +176,8 @@ void InitializeKernel(BootInfo *bootInfo)
   PrepareACPI(bootInfo);
 
   // Load all drivers
-  uint64_t num_of_drivers = driver::g_DriverManager.get_num_of_drivers();
-  if (num_of_drivers > 0)
-  {
-    showInfo("Loading drivers");
-    printStatsSpacing();
-    printStats(to_string(num_of_drivers));
-    printStats(" drivers to load");
-    statNewLine();
-
-    driver::g_DriverManager.activate_all();
-  }
-  else
-  {
-    showWarning("No drivers to load");
-  }
+  if (driver::g_DriverManager.get_num_of_drivers() > 0) driver::g_DriverManager.activate_all();
+  else showWarning("No drivers to load");
 
   showSuccess("Kernel initialized successfully");
 

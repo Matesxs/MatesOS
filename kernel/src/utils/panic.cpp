@@ -4,6 +4,8 @@
 
 void Panic(const char *message)
 {
+  asm ("cli");
+
   BasicRenderer::g_Renderer.ClearScreen(BasicRenderer::BR_RED);
   BasicRenderer::g_Renderer.SetCursor(400, 300);
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_BLACK);
@@ -13,4 +15,9 @@ void Panic(const char *message)
   BasicRenderer::g_Renderer.Print(message);
   
   halt();
+}
+
+void __unreachable_code()
+{
+  Panic("Unreachable code hit");
 }
