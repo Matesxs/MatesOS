@@ -1,6 +1,7 @@
 #include "heap.h"
 #include "PageTableManager.h"
 #include "PageFrameAllocator.h"
+#include "../utils/panic.h"
 
 namespace memory
 {
@@ -11,16 +12,16 @@ namespace memory
   uint64_t usedPages = 0;
   size_t start_page_count = 0;
 
-  bool CreateHeap(void *heapAddress, size_t pageCount)
+  void CreateHeap(void *heapAddress, size_t pageCount)
   {
-    if (heapStart != NULL) return false;
+    if (heapStart != NULL) Panic("Heap already initialized");
 
     void *pos = heapAddress;
 
     for (size_t i = 0; i < pageCount; i++)
     {
       void *temp = g_Allocator.RequestPage();
-      if (temp == NULL) return false;
+      if (temp == NULL) Panic("Cant request heap page");
 
       g_PageTableManager.MapMemory(pos, temp);
 
@@ -41,7 +42,6 @@ namespace memory
 
     LastHdr = startSeg;
     start_page_count = pageCount;
-    return true;
   }
 
   HeapSegHdr *HeapSegHdr::Split(size_t splitLength)

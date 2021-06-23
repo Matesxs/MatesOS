@@ -28,6 +28,7 @@ namespace memory
   private:
     void InitBitmap(size_t bitmapSize, void *bufferAddress);
 
+    // bool Initialized = false;
     uint64_t totalMemory;
     uint64_t freeMemory;
     uint64_t reservedMemory;

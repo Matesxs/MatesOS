@@ -26,13 +26,15 @@ void PrepareMemory(BootInfo *bootInfo)
   memory::g_Allocator.LockPages(&_KernelStart, kernelPages);
 
   memory::PageTable *PML4 = (memory::PageTable*)memory::g_Allocator.RequestPage();
+  if (PML4 == NULL) Panic("Failed to alocate PML4 memory page");
   memset(PML4, 0, 0x1000);
 
   memory::g_PageTableManager = memory::PageTableManager(PML4);
 
-  for (uint64_t t = 0; t < GetMemorySize(bootInfo->mMap, mMapEntries, bootInfo->mMapDescSize); t += 0x1000)
+  uint64_t memorySize = GetMemorySize(bootInfo->mMap, mMapEntries, bootInfo->mMapDescSize);
+  for (uint64_t t = (uint64_t)bootInfo->mMap->physAddr; t < memorySize; t += 0x1000)
   {
-    memory::g_PageTableManager.MapMemory((void *)t, (void *)t);
+    memory::g_PageTableManager.IndentityMapMemory((void *)t);
   }
 
   uint64_t fbBase = (uint64_t)bootInfo->framebuffer->BaseAddress;
@@ -40,7 +42,7 @@ void PrepareMemory(BootInfo *bootInfo)
   memory::g_Allocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
   for (uint64_t t = fbBase; t < fbBase + fbSize; t += 4096)
   {
-    memory::g_PageTableManager.MapMemory((void *)t, (void *)t);
+    memory::g_PageTableManager.IndentityMapMemory((void *)t);
   }
 
   asm("mov %0, %%cr3" : : "r"(PML4));
@@ -145,8 +147,12 @@ void PrepareACPI(BootInfo *bootInfo)
 
 void InitializeKernel(BootInfo *bootInfo)
 {
+  memset(&_BSSStart, 0, (uint64_t)&_KernelEnd - (uint64_t)&_BSSStart);
+
   BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
+  BasicRenderer::g_Renderer.ClearScreen();
   setLoggerStart(50, 50);
+  showSuccess("Frame buffer initialized");
 
   GDTDescriptor gdtDescriptor;
   gdtDescriptor.Size = sizeof(GDT) - 1;
@@ -154,17 +160,10 @@ void InitializeKernel(BootInfo *bootInfo)
   LoadGDT(&gdtDescriptor);
 
   PrepareMemory(bootInfo);
-  BasicRenderer::g_Renderer.ClearScreen();
   showSuccess("Memory initialized");
-  showSuccess("Frame buffer initialized");
 
-  if (memory::CreateHeap((void*)0x0000100000000000, 0x10))
-    showSuccess("Heap initialized");
-  else
-  {
-    showFailed("Heap initialization failed");
-    halt();
-  }
+  memory::CreateHeap((void*)0x0000100000000000, 0x10);
+  showSuccess("Heap initialized");
 
   PrepareInterrupts();
 

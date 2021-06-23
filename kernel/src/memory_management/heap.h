@@ -16,7 +16,7 @@ namespace memory
     HeapSegHdr *Split(size_t splitLength);
   };
 
-  bool CreateHeap(void *heapAddress, size_t pageCount);
+  void CreateHeap(void *heapAddress, size_t pageCount);
 
   void *malloc(size_t size);
   void free(void *address);

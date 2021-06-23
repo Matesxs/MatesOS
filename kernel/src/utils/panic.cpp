@@ -1,5 +1,6 @@
 #include "panic.h"
 #include "../renderer/basic_renderer.h"
+#include "helpers.h"
 
 void Panic(const char *message)
 {
@@ -10,4 +11,6 @@ void Panic(const char *message)
   BasicRenderer::g_Renderer.NewLine();
   BasicRenderer::g_Renderer.NewLine();
   BasicRenderer::g_Renderer.Print(message);
+  
+  halt();
 }

@@ -153,7 +153,9 @@ namespace AHCI
     PortType portType;
     uint8_t *buffer;
     uint8_t portNumber;
-    void Configure();
+    bool configured = false;
+
+    bool Configure();
     void StartCMD();
     void StopCMD();
     bool Read(uint64_t sector, uint32_t sectorCount);
@@ -167,7 +169,7 @@ namespace AHCI
     PCI::PCIDeviceheader *PCIBaseAddress;
     HBAMemory *ABAR;
     Port *ports[32];
-    uint8_t portCount;
+    uint8_t portCount = 0;
 
     void ProbePorts();
     void AddPort(AHCI::PortType portType, AHCI::HBAPort *port);

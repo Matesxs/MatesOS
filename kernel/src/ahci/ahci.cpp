@@ -94,16 +94,20 @@ namespace AHCI
     }
   }
 
-  void Port::Configure()
+  bool Port::Configure()
   {
     StopCMD();
 
     void *newBase = memory::g_Allocator.RequestPage();
+    if (newBase == NULL) return false;
+
     hbaPort->commandListBase = (uint32_t)(uint64_t)newBase;
     hbaPort->commandListBaseUpper = (uint32_t)((uint64_t)newBase >> 32);
     memset((void *)(hbaPort->commandListBase), 0, 1024);
 
     void *fisBase = memory::g_Allocator.RequestPage();
+    if (fisBase == NULL) return false;
+
     hbaPort->fisBaseAddress = (uint32_t)(uint64_t)fisBase;
     hbaPort->fisBaseAddressUpper = (uint32_t)((uint64_t)fisBase >> 32);
     memset(fisBase, 0, 256);
@@ -115,6 +119,8 @@ namespace AHCI
       cmdHeader[i].prdtLength = 8;
 
       void *cmdTableAddress = memory::g_Allocator.RequestPage();
+      if (cmdTableAddress == NULL) return false;
+
       uint64_t address = (uint64_t)cmdTableAddress + (i << 8);
       cmdHeader[i].commandTableBaseAddress = (uint32_t)(uint64_t)address;
       cmdHeader[i].commandTableBaseAddressUpper = (uint32_t)((uint64_t)address >> 32);
@@ -122,6 +128,9 @@ namespace AHCI
     }
 
     StartCMD();
+
+    configured = true;
+    return true;
   }
 
   void Port::StopCMD()
@@ -228,14 +237,23 @@ namespace AHCI
 
     ProbePorts();
 
-    for (uint8_t i = 0; i < portCount; i++)
-      ports[i]->Configure();
-
-    showSuccess("AHCI Driver loaded");
     printStats("   - Found ");
     printStats(to_string((uint64_t)portCount));
     printStats(" ports");
     statNewLine();
+
+    for (uint8_t i = 0; i < portCount; i++)
+    {
+      if (!ports[i]->Configure())
+      {
+        printStatsSpacing();
+        printStats("Failed to configure port ", BasicRenderer::BR_YELLOW);
+        printStats(to_string((uint64_t)i));
+        statNewLine();
+      }
+    }
+
+    showSuccess("AHCI Driver loaded");
 
     return true;
   }

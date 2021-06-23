@@ -24,5 +24,6 @@ struct BootInfo
 
 extern uint64_t _KernelStart;
 extern uint64_t _KernelEnd;
+extern uint64_t _BSSStart;
 
 void InitializeKernel(BootInfo* BootInfo);

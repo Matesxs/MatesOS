@@ -1,6 +1,7 @@
 #include "PageFrameAllocator.h"
-
-#define DEBUG
+#include "../renderer/stat_logger.h"
+#include "../utils/panic.h"
+#include "../library/string.h"
 
 namespace memory
 {
@@ -9,10 +10,16 @@ namespace memory
 
   void PageFrameAllocator::ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR *mMap, size_t mMapSize, size_t mMapDescSize)
   {
-    if (Initialized)
-      return;
-
+    if (Initialized) return;
     Initialized = true;
+
+    showInfo("Reading EFI Memory Map");
+
+    if (mMap == nullptr || mMapSize == 0 || mMapDescSize == 0 || \
+        mMapDescSize > mMapSize)
+    {
+      Panic("PageFrameAllocator get invalid EFI_MEMORY_DESCRIPTOR");
+    }
 
     uint64_t mMapEntries = mMapSize / mMapDescSize;
 
@@ -32,13 +39,23 @@ namespace memory
       }
     }
 
+    if (largestFreeMemSeg == NULL) Panic("Failed to get free memory segment from EFI memory descriptor");
+
     totalMemory = GetMemorySize(mMap, mMapEntries, mMapDescSize);
     freeMemory = totalMemory;
     uint64_t bitmapSize = totalMemory / 4096 / 8 + 1;
 
     InitBitmap(bitmapSize, largestFreeMemSeg);
 
-    ReservePages(0, totalMemory / 4096 + 1);
+    uint64_t totalPages = totalMemory / 4096 + 1;
+    ReservePages(0, totalPages);
+
+    printStatsSpacing();
+    printStats("Found ");
+    printStats(to_string(totalPages));
+    printStats(" free memory pages");
+    statNewLine();
+
     for (uint64_t i = 0; i < mMapEntries; i++)
     {
       EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));

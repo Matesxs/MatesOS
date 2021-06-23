@@ -4,24 +4,20 @@
 #include "../userinput/keyboard.h"
 #include "../scheduling/pit/pit.h"
 #include "../userinput/mouse.h"
-#include "../utils/helpers.h"
 
 __attribute__((interrupt)) void PageFault_Handler(interrupt_frame *frame)
 {
   Panic("Page Fault Detected");
-  halt();
 }
 
 __attribute__((interrupt)) void DoubleFault_Handler(interrupt_frame *frame)
 {
   Panic("Double Fault Detected");
-  halt();
 }
 
 __attribute__((interrupt)) void GPFault_Handler(interrupt_frame *frame)
 {
   Panic("General Protection Fault Detected");
-  halt();
 }
 
 __attribute__((interrupt)) void KeyboardInt_Handler(interrupt_frame *frame)

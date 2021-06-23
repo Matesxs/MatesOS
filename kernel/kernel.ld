@@ -3,6 +3,8 @@ ENTRY(_start)
 
 SECTIONS
 {
+  . = 0x100000;
+  
   _KernelStart = .;
   .text : ALIGN(0x1000)
   {
@@ -19,6 +21,7 @@ SECTIONS
     *(.rodata)
   }
 
+  _BSSStart = .;
   .bss : ALIGN(0x1000)
   {
     *(COMMON)
