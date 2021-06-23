@@ -11,6 +11,8 @@ namespace osStats
   uint64_t reservedRam;
   uint64_t frameBufferAddr;
   uint64_t frameBufferSize;
+  uint64_t frameBufferWidth;
+  uint64_t frameBufferHeigth;
   uint64_t heapPages;
 
   void updateOSStats()
@@ -23,6 +25,8 @@ namespace osStats
     FrameBuffer fbuff = BasicRenderer::g_Renderer.GetFramebuffer();
     frameBufferAddr = (uint64_t)fbuff.BaseAddress;
     frameBufferSize = fbuff.BufferSize;
+    frameBufferWidth = fbuff.Width;
+    frameBufferHeigth = fbuff.Height;
 
     heapPages = memory::GetHeapPages();
   }

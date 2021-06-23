@@ -10,6 +10,8 @@ namespace osStats
   extern uint64_t reservedRam;
   extern uint64_t frameBufferAddr;
   extern uint64_t frameBufferSize;
+  extern uint64_t frameBufferWidth;
+  extern uint64_t frameBufferHeigth;
   extern uint64_t heapPages;
 
   void updateOSStats();
