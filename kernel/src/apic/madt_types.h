@@ -4,7 +4,7 @@
 
 namespace APIC
 {
-  struct MADTRecord
+  struct MADTHeader
 	{
 		uint8_t type;
 		uint8_t length;
@@ -12,7 +12,7 @@ namespace APIC
 
 	struct MADTLocalProcessor
 	{
-		MADTRecord record;
+		MADTHeader header;
 		uint8_t processor_id;
 		uint8_t local_apic_id;
 		uint32_t flags;
@@ -20,7 +20,7 @@ namespace APIC
 
 	struct MADTIOAPIC
 	{
-		MADTRecord record;
+		MADTHeader header;
 		uint8_t ioapic_id;
 		uint8_t reserved;
 		uint32_t ioapic_address;
@@ -29,7 +29,7 @@ namespace APIC
 
 	struct MADTInterruptSourceOverride
 	{
-		MADTRecord record;
+		MADTHeader header;
 		uint8_t bus; // Always 0 (ISA)
 		uint8_t source;
 		uint32_t global_interrupt;
@@ -38,7 +38,7 @@ namespace APIC
 
 	struct MADTNonMaskableInterrupt
 	{
-		MADTRecord record;
+		MADTHeader header;
 		uint8_t local_apic_id;
 		uint16_t flags;
 		uint8_t lint;
@@ -46,7 +46,7 @@ namespace APIC
 
 	struct MADTLocalAPICAddressOverride
 	{
-		MADTRecord record;
+		MADTHeader header;
 		uint8_t reserved[2];
 		uint64_t local_apic_address;
 	} __attribute__((packed));

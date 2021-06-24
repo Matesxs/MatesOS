@@ -29,14 +29,14 @@ namespace APIC
 
     while (t < madt->Header.Length - sizeof(ACPI::MADTHeader))
     {
-      MADTRecord *record = (MADTRecord*)((uint64_t)madt + sizeof(ACPI::MADTHeader) + t);
-      t += record->length;
+      MADTHeader *header = (MADTHeader*)((uint64_t)madt + sizeof(ACPI::MADTHeader) + t);
+      t += header->length;
 
-      switch (record->type)
+      switch (header->type)
       {
         case MADT_TYPE_LOCAL_PROCESSOR:
         {
-          MADTLocalProcessor *localProcessor = (MADTLocalProcessor*)record;
+          MADTLocalProcessor *localProcessor = (MADTLocalProcessor*)header;
 
           s_madt_info.processors[s_madt_info.processors_num].local_processor = localProcessor;
           s_madt_info.processors_num++;
@@ -45,7 +45,7 @@ namespace APIC
 
         case MADT_TYPE_IOAPIC:
         {
-          MADTIOAPIC *ioapic = (MADTIOAPIC*)record;
+          MADTIOAPIC *ioapic = (MADTIOAPIC*)header;
           void *ioapic_ptr = (void*)(uint64_t)ioapic->ioapic_address;
 
           memory::g_PageTableManager.IndentityMapMemory(ioapic_ptr);
@@ -57,7 +57,7 @@ namespace APIC
 
         case MADT_TYPE_INTERRUPT_SOURCE_OVERRIDE:
         {
-          MADTInterruptSourceOverride* iso = (MADTInterruptSourceOverride*)record;
+          MADTInterruptSourceOverride* iso = (MADTInterruptSourceOverride*)header;
           s_madt_info.isos[s_madt_info.isos_num] = iso;
 				  s_madt_info.isos_num++;
 				  break;
@@ -65,7 +65,7 @@ namespace APIC
 
         case MADT_TYPE_NONMASKABLE_INTERRUPT:
         {
-          MADTNonMaskableInterrupt* nmi = (MADTNonMaskableInterrupt*)record;
+          MADTNonMaskableInterrupt* nmi = (MADTNonMaskableInterrupt*)header;
           s_madt_info.nmis[s_madt_info.nmis_num] = nmi;
           s_madt_info.nmis_num++;
 
@@ -78,7 +78,7 @@ namespace APIC
 
         case MADT_TYPE_LOCAL_APIC_ADDRESS_OVERRIDE:
         {
-          MADTLocalAPICAddressOverride* local_apic_override = (MADTLocalAPICAddressOverride*)record;
+          MADTLocalAPICAddressOverride* local_apic_override = (MADTLocalAPICAddressOverride*)header;
           local_apic_ptr = (void*)local_apic_override->local_apic_address;
 
           printStats("   - ");
