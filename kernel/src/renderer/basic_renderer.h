@@ -13,6 +13,7 @@ namespace BasicRenderer
   class Renderer
   {
   public:
+    Renderer();
     Renderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor);
 
     void SetFramebuffer(FrameBuffer *_frameBuffer);

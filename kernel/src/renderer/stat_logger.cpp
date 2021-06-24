@@ -2,19 +2,6 @@
 #include "../memory_management/PageFrameAllocator.h"
 #include "../memory_management/heap.h"
 
-Point statLoggingCursor = {0, 0};
-uint32_t defaultX = 0;
-
-void setLoggerStart(unsigned int x, unsigned int y)
-{
-  if (x <= BasicRenderer::g_Renderer.GetWidth() && y <= BasicRenderer::g_Renderer.GetHeight())
-  {
-    statLoggingCursor.X = x;
-    defaultX = x;
-    statLoggingCursor.Y = y;
-  }
-}
-
 void sizePrint(uint64_t size)
 {
   if (size / 1099511627776 > 1)
@@ -110,12 +97,6 @@ void ShowRAM()
 
 void ShowOSStats()
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
-  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
-  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
-
-  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
   BasicRenderer::g_Renderer.Print("OS Stats:");
   BasicRenderer::g_Renderer.NewLine();
@@ -123,11 +104,6 @@ void ShowOSStats()
   ShowHeap();
   ShowBasicFrameBuffer();
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
-
-  BasicRenderer::g_Renderer.SetColor(tmpColor);
-  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
-  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
-  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
 void ShowOSStats(unsigned int x, unsigned int y)
@@ -152,12 +128,6 @@ void ShowOSStats(unsigned int x, unsigned int y)
 
 void showSuccess(const char *message)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
-  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
-  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
-
-  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
   BasicRenderer::g_Renderer.Print("[ ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_GREEN);
@@ -166,21 +136,10 @@ void showSuccess(const char *message)
   BasicRenderer::g_Renderer.Print(" ] ");
   BasicRenderer::g_Renderer.Print(message);
   BasicRenderer::g_Renderer.NewLine();
-
-  BasicRenderer::g_Renderer.SetColor(tmpColor);
-  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
-  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
-  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
 void showFailed(const char *message)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
-  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
-  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
-
-  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
   BasicRenderer::g_Renderer.Print("[ ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_RED);
@@ -189,21 +148,10 @@ void showFailed(const char *message)
   BasicRenderer::g_Renderer.Print(" ] ");
   BasicRenderer::g_Renderer.Print(message);
   BasicRenderer::g_Renderer.NewLine();
-
-  BasicRenderer::g_Renderer.SetColor(tmpColor);
-  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
-  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
-  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
 void showWarning(const char *message)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
-  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
-  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
-
-  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
   BasicRenderer::g_Renderer.Print("[ ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_YELLOW);
@@ -212,68 +160,29 @@ void showWarning(const char *message)
   BasicRenderer::g_Renderer.Print(" ] ");
   BasicRenderer::g_Renderer.Print(message);
   BasicRenderer::g_Renderer.NewLine();
-
-  BasicRenderer::g_Renderer.SetColor(tmpColor);
-  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
-  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
-  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
 void showInfo(const char *message)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
-  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
-  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
-
-  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
   BasicRenderer::g_Renderer.Print("[ * ] ");
   BasicRenderer::g_Renderer.Print(message);
   BasicRenderer::g_Renderer.NewLine();
-
-  BasicRenderer::g_Renderer.SetColor(tmpColor);
-  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
-  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
-  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
 void printStats(const char *message, uint32_t color)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
-  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
-  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
-
-  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
   BasicRenderer::g_Renderer.SetColor(color);
   BasicRenderer::g_Renderer.Print(message);
-
-  BasicRenderer::g_Renderer.SetColor(tmpColor);
-  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
-  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
-  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
 void printStatsSpacing(uint32_t color)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
-  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
-  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
-
-  BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
   BasicRenderer::g_Renderer.SetColor(color);
   BasicRenderer::g_Renderer.Print("   - ");
-
-  BasicRenderer::g_Renderer.SetColor(tmpColor);
-  statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
-  statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
-  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
 void statNewLine()
 {
-  statLoggingCursor.X = defaultX;
-  statLoggingCursor.Y += 16;
+  BasicRenderer::g_Renderer.NewLine();
 }

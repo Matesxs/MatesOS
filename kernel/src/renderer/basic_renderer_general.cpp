@@ -1,8 +1,9 @@
 #include "basic_renderer.h"
+#include "../library/memory.h"
 
 namespace BasicRenderer
 {
-	Renderer g_Renderer(NULL, NULL, BR_BLACK, BR_BLACK);
+	Renderer g_Renderer;
 
 	void InitGlobalBasicRenderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor)
 	{
@@ -12,11 +13,14 @@ namespace BasicRenderer
 		g_Renderer.SetBackColor(_backColor);
 	}
 
-	Renderer::Renderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor) : frameBuffer(_frameBuffer),
-																																																							 font(_font),
-																																																							 color(_frontColor),
-																																																							 clearColor(_backColor)
+	Renderer::Renderer() {};
+
+	Renderer::Renderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor)
 	{
+		SetFramebuffer(_frameBuffer);
+		SetFont(_font);
+		SetColor(_frontColor);
+		SetBackColor(_backColor);
 		baseXOff = 0;
 		textCursorPos = {0, 0};
 	}
@@ -160,19 +164,17 @@ namespace BasicRenderer
 			if (*chr == '\n')
 			{
 				chr++;
-				textCursorPos.Y += 16;
-				textCursorPos.X = baseXOff;
+				NewLine();
 				continue;
+			}
+
+			if (textCursorPos.X + 8 > frameBuffer->Width)
+			{
+				NewLine();
 			}
 
 			PutChar(*chr, textCursorPos.X, textCursorPos.Y);
 			textCursorPos.X += 8;
-
-			if (textCursorPos.X + 8 > frameBuffer->Width)
-			{
-				textCursorPos.X = baseXOff;
-				textCursorPos.Y += 16;
-			}
 
 			chr++;
 		}
@@ -183,7 +185,6 @@ namespace BasicRenderer
 		if (font == NULL || frameBuffer == NULL)
 			return;
 
-		unsigned int *pixPtr = (unsigned int *)frameBuffer->BaseAddress;
 		char *fontPtr = (char *)font->glyphBuffer + (chr * font->psf1_header->charsize);
 		for (unsigned long y = yOff; y < yOff + 16; y++)
 		{
@@ -195,10 +196,8 @@ namespace BasicRenderer
 				if (x > frameBuffer->Width)
 					break;
 
-				if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0)
-				{
-					*(unsigned int *)(pixPtr + x + (y * frameBuffer->PixelsPerScanline)) = color;
-				}
+				if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0) SetPix(x, y, color);
+				else SetPix(x, y, clearColor);
 			}
 
 			fontPtr++;
@@ -222,8 +221,7 @@ namespace BasicRenderer
 		textCursorPos.X += 8;
 		if (textCursorPos.X + 8 > frameBuffer->Width)
 		{
-			textCursorPos.X = baseXOff;
-			textCursorPos.Y += 16;
+			NewLine();
 		}
 	}
 }

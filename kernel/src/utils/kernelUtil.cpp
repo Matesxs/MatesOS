@@ -91,10 +91,7 @@ void InitAPIC(ACPI::SDTHeader *xsdt)
   if (!CPU::feature::APIC()) Panic("APIC not supported");
 
   ACPI::MADTHeader *madt = (ACPI::MADTHeader*)ACPI::FindTable(xsdt, (char*)"APIC");
-  if (madt == nullptr)
-  {
-    Panic("MADT Table not found - no APIC support!");
-  }
+  if (madt == nullptr) Panic("MADT Table not found - no APIC support!");
   else
   {
     showSuccess("MADT Table found");
@@ -127,10 +124,6 @@ void PrepareACPI(BootInfo *bootInfo)
   else
   {
     showSuccess("MCFG Table found");
-    // printStatsSpacing();
-    // printStats("Address: 0x");
-    // printStats(to_hstring((uint64_t)mcfg));
-    // statNewLine();
     PCI::EnumeratePCI(mcfg);
   }
 
@@ -154,7 +147,7 @@ void InitializeKernel(BootInfo *bootInfo)
 
   BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
   BasicRenderer::g_Renderer.ClearScreen();
-  setLoggerStart(50, 50);
+  BasicRenderer::g_Renderer.SetCursor(50, 0);
   showSuccess("Frame buffer initialized");
 
   CPU::feature::cpu_enable_features();
@@ -210,7 +203,7 @@ void InitializeKernel(BootInfo *bootInfo)
   showSuccess("Kernel initialized successfully");
 
   statNewLine();
-  ShowOSStats(BasicRenderer::g_Renderer.GetWidth() - 450, 50);
+  ShowOSStats();
 
   // enable maskable interrupts
   asm ("sti");

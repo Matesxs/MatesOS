@@ -3,7 +3,6 @@
 #include "basic_renderer.h"
 #include "../library/string.h"
 
-void setLoggerStart(unsigned int x, unsigned int y);
 void showSuccess(const char *message);
 void showFailed(const char *message);
 void showWarning(const char *message);

@@ -6,7 +6,7 @@
 #include "../utils/helpers.h"
 #include "../utils/panic.h"
 
-#define DEBUG
+// #define DEBUG
 
 #define MAX_NUMBER_OF_LANES 32
 
@@ -70,7 +70,7 @@ namespace PCI
 
   void EnumeratePCI(ACPI::MCFGHeader *mcfg)
   {
-    showInfo("PCI Driver initializing");
+    showInfo("PCI initializing");
 
     if (checksum((char*)&mcfg->Header, mcfg->Header.Length)) Panic("Failed SDT header checksum in MCFG header");
     if (mcfg->Header.Length < sizeof(ACPI::SDTHeader)) Panic("Impossible size of SDT header in MCFG header");
@@ -82,7 +82,10 @@ namespace PCI
       return;
     }
 
-    // PCIDeviceheader *device = EnumerateFunction(mcfg, 0, 0, 0, 0);
+    // PCIDeviceheader *device1 = EnumerateFunction(mcfg, 0, 0, 0, 0);
+    // PCIDeviceheader *device2 = EnumerateFunction(mcfg, 0, 0, 0, 1);
+    // PCIDeviceheader *device3 = EnumerateFunction(mcfg, 0, 0, 0, 2);
+    // PCIDeviceheader *device4 = EnumerateFunction(mcfg, 0, 0, 0, 3);
 
     for (uint64_t t = 0; t < entries; t++)
     {
@@ -141,7 +144,7 @@ namespace PCI
       }
     }
 
-    showSuccess("PCI Driver initialized");
+    showSuccess("PCI initialized");
   }
 
   PCIDeviceheader *EnumerateFunction(ACPI::MCFGHeader *mcfg, uint64_t entryIndex, uint64_t busIndex, uint64_t deviceIndex, uint64_t functionIndex)
