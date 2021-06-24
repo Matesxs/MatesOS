@@ -1,7 +1,6 @@
 #include "stat_logger.h"
-#include "../library/string.h"
 #include "../memory_management/PageFrameAllocator.h"
-#include "../utils/os_stats.h"
+#include "../memory_management/heap.h"
 
 Point statLoggingCursor = {0, 0};
 uint32_t defaultX = 0;
@@ -49,25 +48,27 @@ void sizePrint(uint64_t size)
 
 void ShowBasicFrameBuffer()
 {
+  FrameBuffer fbuff = BasicRenderer::g_Renderer.GetFramebuffer();
+
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Frame resolution:     ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  BasicRenderer::g_Renderer.Print(to_string(osStats::frameBufferWidth));
+  BasicRenderer::g_Renderer.Print(to_string((uint64_t)fbuff.Width));
   BasicRenderer::g_Renderer.Print("x");
-  BasicRenderer::g_Renderer.Print(to_string(osStats::frameBufferHeigth));
+  BasicRenderer::g_Renderer.Print(to_string((uint64_t)fbuff.Height));
 
   BasicRenderer::g_Renderer.NewLine();
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Frame buffer address: ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
   BasicRenderer::g_Renderer.Print("0x");
-  BasicRenderer::g_Renderer.Print(to_hstring(osStats::frameBufferAddr));
+  BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)fbuff.BaseAddress));
 
   BasicRenderer::g_Renderer.NewLine();
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Frame buffer size:    ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  sizePrint(osStats::frameBufferSize);
+  sizePrint(fbuff.BufferSize);
 }
 
 void ShowHeap()
@@ -75,13 +76,13 @@ void ShowHeap()
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Heap pages:           ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  BasicRenderer::g_Renderer.Print(to_string(osStats::heapPages));
+  BasicRenderer::g_Renderer.Print(to_string(memory::GetHeapPages()));
   BasicRenderer::g_Renderer.NewLine();
 
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Heap size:            ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  sizePrint(osStats::heapPages * 4096);
+  sizePrint(memory::GetHeapPages() * 4096);
 }
 
 void ShowRAM()
@@ -89,22 +90,22 @@ void ShowRAM()
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Total RAM:            ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  sizePrint(osStats::totalRam);
+  sizePrint(memory::g_Allocator.GetTotalMemory());
 
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Free RAM:             ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  sizePrint(osStats::freeRam);
+  sizePrint(memory::g_Allocator.GetFreeMemory());
 
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Used RAM:             ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  sizePrint(osStats::usedRam);
+  sizePrint(memory::g_Allocator.GetUsedMemory());
 
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Reserved RAM:         ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
-  sizePrint(osStats::reservedRam);
+  sizePrint(memory::g_Allocator.GetReservedMemory());
 }
 
 void ShowOSStats()
@@ -114,8 +115,6 @@ void ShowOSStats()
   uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
 
   BasicRenderer::g_Renderer.SetCursor(statLoggingCursor.X, statLoggingCursor.Y);
-
-  osStats::updateOSStats();
 
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
   BasicRenderer::g_Renderer.Print("OS Stats:");
@@ -128,6 +127,26 @@ void ShowOSStats()
   BasicRenderer::g_Renderer.SetColor(tmpColor);
   statLoggingCursor.X = BasicRenderer::g_Renderer.GetCursorX();
   statLoggingCursor.Y = BasicRenderer::g_Renderer.GetCursorY();
+  BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
+}
+
+void ShowOSStats(unsigned int x, unsigned int y)
+{
+  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
+  uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
+  uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
+
+  BasicRenderer::g_Renderer.SetCursor(x, y);
+
+  BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
+  BasicRenderer::g_Renderer.Print("OS Stats:");
+  BasicRenderer::g_Renderer.NewLine();
+  ShowRAM();
+  ShowHeap();
+  ShowBasicFrameBuffer();
+  BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_WHITE);
+
+  BasicRenderer::g_Renderer.SetColor(tmpColor);
   BasicRenderer::g_Renderer.SetCursor(tmpX, tmpY);
 }
 
