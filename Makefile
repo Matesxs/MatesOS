@@ -20,7 +20,10 @@ kernel:
 kernel_debug:
 	cd kernel && $(MAKE) debug
 
-image: cleanimages bootloader kernel
+image: cleanimages
+	$(MAKE) bootloader
+	$(MAKE) kernel
+
 	dd if=/dev/zero of=$(OSNAME).img bs=512 count=93750
 	mformat -i $(OSNAME).img -f 1440 ::
 	mmd -i $(OSNAME).img ::/EFI
@@ -58,7 +61,7 @@ clean: cleanimages
 $(OVMFDIR):
 	git clone git@github.com:Matesxs/OVMFbin.git
 
-run: OVMFbin image
+run: image
 	$(MAKE) run_only
 
 run_only: OVMFbin
