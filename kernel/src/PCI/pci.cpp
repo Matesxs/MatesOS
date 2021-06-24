@@ -112,13 +112,13 @@ namespace PCI
 
       switch (pciDeviceHeader->Class)
       {
-        case 0x01: // Mass storage controller
+        case DC_MassStorageController:
           switch (pciDeviceHeader->Subclass)
           {
-            case 0x06: // Serial ATA
+            case MSCSC_SATA: // Serial ATA
               switch (pciDeviceHeader->ProgIF)
               {
-                case 0x01: // AHCI 1.0 device
+                case SATAPI_AHCI_1_0_Device: // AHCI 1.0 device
                   driver::g_DriverManager.add_driver(new AHCI::AHCIDriver(pciDeviceHeader));
                   break;
               }

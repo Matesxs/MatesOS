@@ -5,6 +5,7 @@
 #include "../memory_management/PageTableManager.h"
 #include "../renderer/basic_renderer.h"
 #include "../library/string.h"
+#include "pci_enum.h"
 
 namespace PCI
 {
