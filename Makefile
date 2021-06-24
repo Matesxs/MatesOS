@@ -83,7 +83,6 @@ flash:
 	mkdir flash_folder/STATIC_SOURCES
 	mkdir flash_folder/STATIC_SOURCES/FONTS
 
-	cp $(BOOTEFI) flash_folder/EFI/BOOT/main.efi
-	cp startup.nsh flash_folder/startup.nsh
+	cp $(BOOTEFI) flash_folder/EFI/BOOT/bootx64.efi
 	cp $(KERNELPATH) flash_folder/kernel.elf
 	cp -r static_data/fonts/* flash_folder/STATIC_SOURCES/FONTS/
