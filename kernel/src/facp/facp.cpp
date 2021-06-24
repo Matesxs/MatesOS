@@ -127,10 +127,16 @@ namespace FACP
         outw(PM1b_CNT, SLP_TYPb | SLP_EN);
     }
 
-    outw (0xB004, 0x2000);
+    // Next code works only in virtual environment and is there only as backup if normal ACPI shutdown failed
 
-    const char* s = "Shutdown";
-    while (*s) outb (0x8900, *(s++));
+    // Shudown old QEMU and Bochs
+    outw(0xB004, 0x2000);
+
+    // Shudown new QEMU
+    outw(0x604, 0x2000);
+
+    // Shutdown Virtualbox
+    outw(0x4004, 0x3400);
 
     __unreachable_code();
     while (true) asm ("hlt");
