@@ -12,6 +12,7 @@
 #include "../apic/madt.h"
 #include "../facp/facp.h"
 #include "../utils/panic.h"
+#include "../cpu/features.h"
 
 void PrepareMemory(BootInfo *bootInfo)
 {
@@ -87,6 +88,8 @@ void PrepareInterrupts()
 
 void InitAPIC(ACPI::SDTHeader *xsdt)
 {
+  if (!CPU::feature::APIC()) Panic("APIC not supported");
+
   ACPI::MADTHeader *madt = (ACPI::MADTHeader*)ACPI::FindTable(xsdt, (char*)"APIC");
   if (madt == nullptr)
   {
@@ -154,6 +157,31 @@ void InitializeKernel(BootInfo *bootInfo)
   setLoggerStart(50, 50);
   showSuccess("Frame buffer initialized");
 
+  CPU::feature::cpu_enable_features();
+  CPU::CPUInfo cpuInfo = CPU::GetCPUInfo();
+  showSuccess("CPU Info loaded");
+
+  printStatsSpacing();
+  printStats("Vendor: ");
+  printStats(cpuInfo.VendorString);
+  printStats(" (");
+  printStats(to_string((uint64_t)cpuInfo.VendorID));
+  printStats(")");
+  statNewLine();
+
+  printStatsSpacing();
+  printStats("Brand: ");
+  printStats(cpuInfo.BrandString);
+  statNewLine();
+
+  printStatsSpacing();
+  printStats("Features: ");
+  if (CPU::feature::APIC()) printStats("APIC ");
+  if (CPU::feature::FPU()) printStats("FPU ");
+  if (CPU::feature::X2APIC()) printStats("X2APIC ");
+  if (CPU::feature::SSE()) printStats("SSE ");
+  statNewLine();
+
   GDTDescriptor gdtDescriptor;
   gdtDescriptor.Size = sizeof(GDT) - 1;
   gdtDescriptor.Offset = (uint64_t)&DefaultGDT;
@@ -182,7 +210,7 @@ void InitializeKernel(BootInfo *bootInfo)
   showSuccess("Kernel initialized successfully");
 
   statNewLine();
-  ShowOSStats();
+  ShowOSStats(BasicRenderer::g_Renderer.GetWidth() - 450, 50);
 
   // enable maskable interrupts
   asm ("sti");

@@ -10,6 +10,7 @@
 #include "../userinput/mouse.h"
 #include "../acpi/acpi.h"
 #include "../PCI/pci.h"
+#include "../cpu/cpuInfo.h"
 #include "driver.h"
 
 struct BootInfo
