@@ -125,6 +125,19 @@ namespace PCI
               break;
           }
           break;
+
+        case DC_SerialBusController:
+          switch (pciDeviceHeader->Subclass)
+          {
+            case SBCSC_USBController:
+              switch (pciDeviceHeader->ProgIF)
+              {
+                default:
+                  break;
+              }
+              break;
+          }
+          break;
       }
     }
 
