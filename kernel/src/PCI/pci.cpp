@@ -6,8 +6,15 @@
 #include "../utils/helpers.h"
 #include "../utils/panic.h"
 
+#define DEBUG
+
+#define MAX_NUMBER_OF_LANES 32
+
 namespace PCI
 {
+  static struct PCIDeviceheader* s_pci_devices[MAX_NUMBER_OF_LANES];
+  static size_t s_pci_devices_num = 0;
+
   void EnumerateFunction(uint64_t deviceAddress, uint64_t function)
   {
     uint64_t offset = function << 12;
@@ -20,34 +27,9 @@ namespace PCI
     if (pciDeviceHeader->DeviceID == 0) return;
     if (pciDeviceHeader->DeviceID == 0xffff) return;
 
-    printStats("   - ");
-    printStats(GetVendorName(pciDeviceHeader->VendorID));
-    printStats(" / ");
-    printStats(GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID));
-    printStats(" / ");
-    printStats(DeviceClasses[pciDeviceHeader->Class]);
-    printStats(" / ");
-    printStats(GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass));
-    printStats(" / ");
-    printStats(GetProgramIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF));
-    statNewLine();
-
-    switch (pciDeviceHeader->Class)
-    {
-      case 0x01: // Mass storage controller
-        switch (pciDeviceHeader->Subclass)
-        {
-          case 0x06: // Serial ATA
-            switch (pciDeviceHeader->ProgIF)
-            {
-              case 0x01: // AHCI 1.0 device
-                driver::g_DriverManager.add_driver(new AHCI::AHCIDriver(pciDeviceHeader));
-                break;
-            }
-            break;
-        }
-        break;
-    }
+    if (s_pci_devices_num >= MAX_NUMBER_OF_LANES) return;
+    s_pci_devices[s_pci_devices_num] = pciDeviceHeader;
+    s_pci_devices_num++;
   }
 
   void EnumerateDevice(uint64_t busAddress, uint64_t device)
@@ -93,14 +75,16 @@ namespace PCI
     if (checksum((char*)&mcfg->Header, mcfg->Header.Length)) Panic("Failed SDT header checksum in MCFG header");
     if (mcfg->Header.Length < sizeof(ACPI::SDTHeader)) Panic("Impossible size of SDT header in MCFG header");
 
-    int entries = ((mcfg->Header.Length) - sizeof(ACPI::MCFGHeader)) / sizeof(ACPI::DeviceConfig);
+    uint64_t entries = ((mcfg->Header.Length) - sizeof(ACPI::MCFGHeader)) / sizeof(ACPI::DeviceConfig);
     if (entries == 0)
     {
       showWarning("No PCI buses found");
       return;
     }
 
-    for (int t = 0; t < entries; t++)
+    // PCIDeviceheader *device = EnumerateFunction(mcfg, 0, 0, 0, 0);
+
+    for (uint64_t t = 0; t < entries; t++)
     {
       ACPI::DeviceConfig *newDeviceConfig = (ACPI::DeviceConfig*)((uint64_t)mcfg + sizeof(ACPI::MCFGHeader) + (sizeof(ACPI::DeviceConfig) * t));
       
@@ -110,6 +94,137 @@ namespace PCI
       }
     }
 
+    for (size_t i = 0; i < s_pci_devices_num; i++)
+    {
+      PCIDeviceheader *pciDeviceHeader = s_pci_devices[i];
+
+      printStats("   - ");
+      printStats(GetVendorName(pciDeviceHeader->VendorID));
+      printStats(" / ");
+      printStats(GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID));
+      printStats(" / ");
+      printStats(DeviceClasses[pciDeviceHeader->Class]);
+      printStats(" / ");
+      printStats(GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass));
+      printStats(" / ");
+      printStats(GetProgramIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF));
+      statNewLine();
+
+      switch (pciDeviceHeader->Class)
+      {
+        case 0x01: // Mass storage controller
+          switch (pciDeviceHeader->Subclass)
+          {
+            case 0x06: // Serial ATA
+              switch (pciDeviceHeader->ProgIF)
+              {
+                case 0x01: // AHCI 1.0 device
+                  driver::g_DriverManager.add_driver(new AHCI::AHCIDriver(pciDeviceHeader));
+                  break;
+              }
+              break;
+          }
+          break;
+      }
+    }
+
     showSuccess("PCI Driver initialized");
+  }
+
+  PCIDeviceheader *EnumerateFunction(ACPI::MCFGHeader *mcfg, uint64_t entryIndex, uint64_t busIndex, uint64_t deviceIndex, uint64_t functionIndex)
+  {
+    uint64_t entries = ((mcfg->Header.Length) - sizeof(ACPI::MCFGHeader)) / sizeof(ACPI::DeviceConfig);
+
+    #ifdef DEBUG
+      printStats("  -- ");
+      printStats("Bus Entries: ");
+      printStats(to_string(entries));
+      statNewLine();
+    #endif
+
+    if (entries <= entryIndex) return NULL;
+    if (deviceIndex >= 32) return NULL;
+    if (functionIndex >= 8) return NULL;
+
+    ACPI::DeviceConfig *newDeviceConfig = (ACPI::DeviceConfig*)((uint64_t)mcfg + sizeof(ACPI::MCFGHeader) + (sizeof(ACPI::DeviceConfig) * entryIndex));
+    uint64_t bus = newDeviceConfig->StartBus + busIndex;
+
+    #ifdef DEBUG
+      printStats("  -- ");
+      printStats("Bus start: ");
+      printStats(to_string((uint64_t)newDeviceConfig->StartBus));
+      printStats(" Bus end: ");
+      printStats(to_string((uint64_t)newDeviceConfig->EndBus));
+      printStats(" Selected bus: ");
+      printStats(to_string(bus));
+      statNewLine();
+    #endif
+
+    if (bus >= newDeviceConfig->EndBus) return NULL;
+
+    uint64_t offset1 = bus << 20;
+    uint64_t busAddress = newDeviceConfig->BaseAddress + offset1;
+
+    memory::g_PageTableManager.IndentityMapMemory((void*)busAddress);
+
+    PCIDeviceheader *pciDevicesHeader = (PCIDeviceheader*)busAddress;
+
+    #ifdef DEBUG
+      printStats("  -- ");
+      printStats("L1 - Bus Address:      0x");
+      printStats(to_hstring(busAddress));
+      printStats(" DeviceID: ");
+      printStats(to_string((uint64_t)pciDevicesHeader->DeviceID));
+      printStats(" VendorID: ");
+      printStats(to_string((uint64_t)pciDevicesHeader->VendorID));
+      statNewLine();
+    #endif
+
+    if (pciDevicesHeader->DeviceID == 0) return NULL;
+    if (pciDevicesHeader->DeviceID == 0xffff) return NULL;
+
+    uint64_t offset2 = deviceIndex << 15;
+    uint64_t deviceAddress = busAddress + offset2;
+
+    memory::g_PageTableManager.IndentityMapMemory((void*)deviceAddress);
+
+    PCIDeviceheader *pciDeviceHeader = (PCIDeviceheader*)deviceAddress;
+
+    #ifdef DEBUG
+      printStats("  -- ");
+      printStats("L2 - Device Address:   0x");
+      printStats(to_hstring(deviceAddress));
+      printStats(" DeviceID: ");
+      printStats(to_string((uint64_t)pciDeviceHeader->DeviceID));
+      printStats(" VendorID: ");
+      printStats(to_string((uint64_t)pciDeviceHeader->VendorID));
+      statNewLine();
+    #endif
+
+    if (pciDeviceHeader->DeviceID == 0) return NULL;
+    if (pciDeviceHeader->DeviceID == 0xffff) return NULL;
+
+    uint64_t offset3 = functionIndex << 12;
+    uint64_t functionAddress = deviceAddress + offset3;
+
+    memory::g_PageTableManager.IndentityMapMemory((void*)functionAddress);
+
+    PCIDeviceheader *pciDeviceHeaderFunction = (PCIDeviceheader*)functionAddress;
+
+    #ifdef DEBUG
+      printStats("  -- ");
+      printStats("L3 - Function Address: 0x");
+      printStats(to_hstring(functionAddress));
+      printStats(" DeviceID: ");
+      printStats(to_string((uint64_t)pciDeviceHeaderFunction->DeviceID));
+      printStats(" VendorID: ");
+      printStats(to_string((uint64_t)pciDeviceHeaderFunction->VendorID));
+      statNewLine();
+    #endif
+
+    if (pciDeviceHeaderFunction->DeviceID == 0) return NULL;
+    if (pciDeviceHeaderFunction->DeviceID == 0xffff) return NULL;
+
+    return pciDeviceHeaderFunction;
   }
 }

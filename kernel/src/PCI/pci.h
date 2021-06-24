@@ -48,6 +48,7 @@ namespace PCI
   };
 
   void EnumeratePCI(ACPI::MCFGHeader *mcfg);
+  PCIDeviceheader *EnumerateFunction(ACPI::MCFGHeader *mcfg, uint64_t entryIndex, uint64_t busIndex, uint64_t deviceIndex, uint64_t functionIndex);
 
   extern const char *DeviceClasses[];
   const char *GetVendorName(uint16_t vendorID);
