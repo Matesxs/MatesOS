@@ -183,7 +183,7 @@ void InitializeKernel(BootInfo *bootInfo)
   PrepareMemory(bootInfo);
   showSuccess("Memory initialized");
 
-  memory::CreateHeap((void*)0x0000100000000000, 0x20);
+  memory::CreateHeap((void*)0x0000100000000000, 0x10);
   showSuccess("Heap initialized");
 
   PrepareInterrupts();
@@ -201,6 +201,8 @@ void InitializeKernel(BootInfo *bootInfo)
   else showWarning("No drivers to load");
 
   showSuccess("Kernel initialized successfully");
+
+  memory::WalkHeap();
 
   statNewLine();
   ShowOSStats();

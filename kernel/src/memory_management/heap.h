@@ -17,6 +17,7 @@ namespace memory
   };
 
   void CreateHeap(void *heapAddress, size_t pageCount);
+  void WalkHeap();
 
   void *malloc(size_t size);
   void free(void *address);

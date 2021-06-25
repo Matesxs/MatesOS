@@ -2,6 +2,7 @@
 #include "PageTableManager.h"
 #include "PageFrameAllocator.h"
 #include "../utils/panic.h"
+#include "../renderer/stat_logger.h"
 
 namespace memory
 {
@@ -42,6 +43,33 @@ namespace memory
 
     LastHdr = startSeg;
     start_page_count = pageCount;
+  }
+
+  void WalkHeap()
+  {
+    showInfo("Heap walkthru");
+
+    HeapSegHdr *hdr = (HeapSegHdr*)heapStart;
+    uint64_t c = 0;
+
+    while (hdr)
+    {
+      printStatsSpacing();
+      printStats("[");
+      printStats(to_string(c));
+      printStats("] Base: 0x");
+      printStats(to_hstring((uint64_t)hdr + sizeof(HeapSegHdr)));
+      printStats(", Size: ");
+      printStats(to_string(hdr->length));
+      printStats(", Free: ");
+      printStats(hdr->free ? "True" : "False");
+      printStats(", Next: 0x");
+      printStats(to_hstring((uint64_t)hdr->next));
+      statNewLine();
+
+      hdr = hdr->next;
+      c++;
+    }
   }
 
   HeapSegHdr *HeapSegHdr::Split(size_t splitLength)
