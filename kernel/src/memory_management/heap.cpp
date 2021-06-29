@@ -1,6 +1,7 @@
 #include "heap.h"
 #include "PageTableManager.h"
 #include "PageFrameAllocator.h"
+#include "../library/memory.h"
 #include "../utils/panic.h"
 #include "../renderer/stat_logger.h"
 
@@ -199,6 +200,24 @@ namespace memory
     return malloc(size);
   }
 
+  void *calloc(size_t size)
+  {
+    if (size == 0)
+      return NULL;
+
+    if (size % 0x10 > 0)
+    {
+      size -= (size % 0x10);
+      size += 0x10;
+    }
+
+    void *mem = malloc(size);
+    if (mem == NULL) return NULL;
+
+    memset(mem, 0, size);
+    return mem;
+  }
+
   void free(void *address)
   {
     if (address == NULL) return;
@@ -217,7 +236,7 @@ namespace memory
 
 void *operator new(size_t n)
 {
-  return memory::malloc(n);
+  return memory::calloc(n);
 }
 
 void *operator new(size_t n, void *p)
@@ -227,7 +246,7 @@ void *operator new(size_t n, void *p)
 
 void *operator new[](size_t s)
 {
-  return memory::malloc(s);
+  return memory::calloc(s);
 }
 
 void operator delete(void *p)
