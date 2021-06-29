@@ -5,13 +5,13 @@
 
 struct PSF1_HEADER
 {
-	unsigned char magic[2];
-	unsigned char mode;
-	unsigned char charsize;
+	uint8_t magic[2];
+	uint8_t mode;
+	uint8_t charsize;
 };
 
 struct PSF1_FONT
 {
-	PSF1_HEADER *psf1_header;
-	void *glyphBuffer;
+	PSF1_HEADER psf1_header;
+	uint8_t glyphBuffer[16 * 256];
 };

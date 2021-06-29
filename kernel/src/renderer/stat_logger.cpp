@@ -108,7 +108,7 @@ void ShowOSStats()
 
 void ShowOSStats(unsigned int x, unsigned int y)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
+  BasicRenderer::Color tmpColor = BasicRenderer::g_Renderer.GetColor();
   uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
   uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
 
@@ -170,13 +170,13 @@ void showInfo(const char *message)
   BasicRenderer::g_Renderer.NewLine();
 }
 
-void printStats(const char *message, uint32_t color)
+void printStats(const char *message, BasicRenderer::Color color)
 {
   BasicRenderer::g_Renderer.SetColor(color);
   BasicRenderer::g_Renderer.Print(message);
 }
 
-void printStatsSpacing(uint32_t color)
+void printStatsSpacing(BasicRenderer::Color color)
 {
   BasicRenderer::g_Renderer.SetColor(color);
   BasicRenderer::g_Renderer.Print("   - ");

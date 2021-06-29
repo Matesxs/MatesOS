@@ -5,7 +5,7 @@ namespace BasicRenderer
 {
 	Renderer g_Renderer;
 
-	void InitGlobalBasicRenderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor)
+	void InitGlobalBasicRenderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, Color _frontColor, Color _backColor)
 	{
 		g_Renderer.SetFramebuffer(_frameBuffer);
 		g_Renderer.SetFont(_font);
@@ -13,9 +13,9 @@ namespace BasicRenderer
 		g_Renderer.SetBackColor(_backColor);
 	}
 
-	Renderer::Renderer() {};
+	Renderer::Renderer(){};
 
-	Renderer::Renderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, uint32_t _frontColor, uint32_t _backColor)
+	Renderer::Renderer(FrameBuffer *_frameBuffer, PSF1_FONT *_font, Color _frontColor, Color _backColor)
 	{
 		SetFramebuffer(_frameBuffer);
 		SetFont(_font);
@@ -30,13 +30,18 @@ namespace BasicRenderer
 		ClearScreen(clearColor);
 	}
 
-	void Renderer::ClearScreen(uint32_t _color)
+	void Renderer::ClearScreen(Color _color)
 	{
-		if (frameBuffer == NULL) return;
+		if (frameBuffer == NULL)
+			return;
 
-		for (size_t i = 0; i < frameBuffer->Width * frameBuffer->PixPitch / sizeof(uint32_t); i++) {
-      ((uint32_t*)frameBuffer->BaseAddress)[i] = _color;
-    }
+		for (uint32_t x = 0; x < frameBuffer->Width; x++)
+		{
+			for (uint32_t y = 0; y < frameBuffer->Height; y++)
+			{
+				SetPix(x, y, clearColor);
+			}
+		}
 	}
 
 	void Renderer::ClearChar()
@@ -108,7 +113,7 @@ namespace BasicRenderer
 		}
 	}
 
-	void Renderer::DrawOverlayMouseCursor(uint8_t *mouseCursor, Point position, uint32_t color)
+	void Renderer::DrawOverlayMouseCursor(uint8_t *mouseCursor, Point position, Color color)
 	{
 		int xMax = 16;
 		int yMax = 16;
@@ -177,8 +182,8 @@ namespace BasicRenderer
 		if (font == NULL || frameBuffer == NULL)
 			return;
 
-		char *fontPtr = (char *)font->glyphBuffer + (chr * font->psf1_header->charsize);
-		for (unsigned long y = yOff; y < yOff + 16; y++)
+		char *fontPtr = (char *)font->glyphBuffer + (chr * font->psf1_header.charsize);
+		for (unsigned long y = yOff; y < yOff + font->psf1_header.charsize; y++)
 		{
 			if (y > frameBuffer->Height)
 				break;
@@ -188,8 +193,10 @@ namespace BasicRenderer
 				if (x > frameBuffer->Width)
 					break;
 
-				if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0) SetPix(x, y, color);
-				else SetPix(x, y, clearColor);
+				if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0)
+					SetPix(x, y, color);
+				else
+					SetPix(x, y, clearColor);
 			}
 
 			fontPtr++;

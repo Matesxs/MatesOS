@@ -9,6 +9,11 @@ namespace BasicRenderer
 		((uint32_t*)frameBuffer->BaseAddress)[y * (frameBuffer->PixPitch / sizeof(uint32_t)) + x] = color;
 	}
 
+	void Renderer::SetPix(uint32_t x, uint32_t y, Color color)
+	{
+		SetPix(x, y, fromColor(color));
+	}
+
   void Renderer::SetFont(PSF1_FONT *_font)
 	{
 		if (_font == NULL)
@@ -17,12 +22,12 @@ namespace BasicRenderer
 		font = _font;
 	}
 
-	void Renderer::SetColor(uint32_t _color)
+	void Renderer::SetColor(Color _color)
 	{
 		color = _color;
 	}
 
-	void Renderer::SetBackColor(uint32_t _color)
+	void Renderer::SetBackColor(Color _color)
 	{
 		clearColor = _color;
 	}

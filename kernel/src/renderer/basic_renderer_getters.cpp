@@ -22,12 +22,12 @@ namespace BasicRenderer
 		return frameBuffer->Width;
 	}
 
-  uint32_t Renderer::GetColor()
+  Color Renderer::GetColor()
 	{
 		return color;
 	}
 
-	uint32_t Renderer::GetBackColor()
+	Color Renderer::GetBackColor()
 	{
 		return clearColor;
 	}
@@ -40,7 +40,7 @@ namespace BasicRenderer
   uint32_t Renderer::GetPix(uint32_t x, uint32_t y)
 	{
 		if (x > frameBuffer->Width || y > frameBuffer->Height)
-			return BR_BLACK;
+			return fromColor(BR_BLACK);
 		return ((uint32_t*)frameBuffer->BaseAddress)[y * (frameBuffer->PixPitch / sizeof(uint32_t)) + x];
 	}
 }
