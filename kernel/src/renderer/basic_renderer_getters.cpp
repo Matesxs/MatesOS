@@ -41,6 +41,6 @@ namespace BasicRenderer
 	{
 		if (x > frameBuffer->Width || y > frameBuffer->Height)
 			return BR_BLACK;
-		return *(uint32_t *)((uint64_t)frameBuffer->BaseAddress + (x * 4) + (y * frameBuffer->PixelsPerScanline * 4));
+		return ((uint32_t*)frameBuffer->BaseAddress)[y * (frameBuffer->PixPitch / sizeof(uint32_t)) + x];
 	}
 }

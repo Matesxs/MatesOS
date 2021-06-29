@@ -32,18 +32,11 @@ namespace BasicRenderer
 
 	void Renderer::ClearScreen(uint32_t _color)
 	{
-		uint64_t fbBase = (uint64_t)frameBuffer->BaseAddress;
-		uint64_t bytesPerScanline = frameBuffer->PixelsPerScanline * 4;
-		uint64_t fbHeight = frameBuffer->Height;
+		if (frameBuffer == NULL) return;
 
-		for (uint64_t vertScanLine = 0; vertScanLine < fbHeight; vertScanLine++)
-		{
-			uint64_t pixPtrBase = fbBase + (bytesPerScanline * vertScanLine);
-			for (uint32_t *pixPtr = (uint32_t *)pixPtrBase; pixPtr < (uint32_t *)(pixPtrBase + bytesPerScanline); pixPtr++)
-			{
-				*pixPtr = _color;
-			}
-		}
+		for (size_t i = 0; i < frameBuffer->Width * frameBuffer->PixPitch / sizeof(uint32_t); i++) {
+      ((uint32_t*)frameBuffer->BaseAddress)[i] = _color;
+    }
 	}
 
 	void Renderer::ClearChar()
@@ -62,12 +55,11 @@ namespace BasicRenderer
 		unsigned int xOff = textCursorPos.X;
 		unsigned int yOff = textCursorPos.Y;
 
-		unsigned int *pixPtr = (unsigned int *)frameBuffer->BaseAddress;
 		for (unsigned long y = yOff; y < yOff + 16; y++)
 		{
 			for (unsigned long x = xOff - 8; x < xOff; x++)
 			{
-				*(unsigned int *)(pixPtr + x + (y * frameBuffer->PixelsPerScanline)) = clearColor;
+				SetPix(x, y, clearColor);
 			}
 		}
 

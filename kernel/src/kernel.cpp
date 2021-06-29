@@ -1,3 +1,4 @@
+#include "stivale/stivale_main.h"
 #include "utils/kernelUtil.h"
 #include "renderer/basic_renderer.h"
 #include "memory_management/heap.h"
@@ -8,85 +9,38 @@
 
 #include "facp/facp.h"
 
-extern "C" void _start(BootInfo *bootInfo)
+extern "C" void _start(stivale2_struct *bootloader_info)
 {
-  InitializeKernel(bootInfo);
+  stivale_enumerate(bootloader_info);
 
-  // PIT::SetDivisor(70);
-  // PIT::Sleep(5000);
+  stivale2_struct_tag_framebuffer *fb = (stivale2_struct_tag_framebuffer *)stivale2_get_tag(bootloader_info, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
+	stivale2_struct_tag_rsdp *rsdp = (stivale2_struct_tag_rsdp *)stivale2_get_tag(bootloader_info, STIVALE2_STRUCT_TAG_RSDP_ID);
+	stivale2_struct_tag_memmap *memory_map = (stivale2_struct_tag_memmap *)stivale2_get_tag(bootloader_info, STIVALE2_STRUCT_TAG_MEMMAP_ID);
+	stivale2_struct_tag_smp *smp = (stivale2_struct_tag_smp *)stivale2_get_tag(bootloader_info, STIVALE2_STRUCT_TAG_SMP_ID);
+  stivale2_struct_tag_modules *modules = (stivale2_struct_tag_modules *)stivale2_get_tag(bootloader_info, STIVALE2_STRUCT_TAG_MODULES_ID);
 
-  // FACP::Reboot();
+  stivale2_module fontModule;
+  stivale2_get_module(modules, &fontModule, "font");
 
-  // char *string1 = new char[50];
-  // char *string2 = new char[50];
+  FrameBuffer frameBuffer = {
+    .BaseAddress=(void*)fb->framebuffer_addr,
+    .BufferSize=fb->framebuffer_pitch * fb->framebuffer_height,
+    .Width=fb->framebuffer_width, 
+    .Height=fb->framebuffer_height
+  };
 
-  // BasicRenderer::g_Renderer.SetCursor(1000, 100);
-  // BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string1));
-  // BasicRenderer::g_Renderer.PutChar('\n');
-  // BasicRenderer::g_Renderer.Print(to_hstring((uint64_t)(void*)string2));
-  // BasicRenderer::g_Renderer.PutChar('\n');
+  BootInfo bootInfo = {
+    .framebuffer=&frameBuffer,
+  };
 
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.Print(string1);
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.PutChar('\n');
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.Print(string2);
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.PutChar('\n');
+  e9_printf("Framebuffer address: %x\nFramebuffer resolution: %dx%d\nFramebuffer size: %d",
+            bootInfo.framebuffer->BaseAddress,
+            bootInfo.framebuffer->Width, bootInfo.framebuffer->Height,
+            frameBuffer.BufferSize);
 
-  // memcpy(string1, "Test string 1\0", 14);
-  // memcpy(string2, "Test string 2\0", 14);
+  e9_printf("Bootloader info loaded");
 
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.Print(string1);
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.PutChar('\n');
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.Print(string2);
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.PutChar('\n');
-
-  // memmove(string2, string1, 14);
-
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.Print(string1);
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.PutChar('\n');
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.Print(string2);
-  // BasicRenderer::g_Renderer.PutChar('"');
-  // BasicRenderer::g_Renderer.PutChar('\n');
-
-  // delete [] string1;
-  // delete [] string2;
-
-  // PIT::SetDivisor(60);
-  // PIT::Sleep(10000);
-
-  // FACP::Reboot();
-  // FACP::Shutdown();
-  
-  // // Allocated some random memory
-  // void *mem = memory::malloc(sizeof(uint64_t) * 1000000);
-  // ShowOSStats(1100, 250);
-
-  // // Free that memory
-  // memory::free(mem);
-  // ShowOSStats(1100, 450);
-
-  // // Allocate random memory again
-  // mem = memory::malloc(sizeof(uint64_t) * 1000000);
-  // ShowOSStats(1100, 650);
-
-  // // And another one
-  // void *mem2 = memory::malloc(sizeof(uint32_t) * 200000);
-  // ShowOSStats(1100, 850);
-
-  // // Free both
-  // memory::free(mem);
-  // memory::free(mem2);
-  // ShowOSStats(1500, 50);
+  // InitializeKernel(&bootInfo);
 
   halt();
 }

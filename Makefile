@@ -1,13 +1,9 @@
 OSNAME = MatesOS
 KERNELDIR = kernel
-GNUEFI = gnu-efi
-OVMFDIR = OVMFbin
 
-BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi
 KERNELPATH := $(KERNELDIR)/bin/kernel.elf
 
-.SILENT: flash
-.PHONY: init all kernel kernel_debug rebuildkernel image bootloader rebuild clean cleanimages run run_only run_debug flash
+.PHONY: init all kernel kernel_debug rebuildkernel image rebuild clean cleanimages run run_only run_debug
 
 all: image
 
@@ -21,23 +17,22 @@ kernel:
 kernel_debug:
 	cd kernel && $(MAKE) debug
 
-image: cleanimages
-	$(MAKE) bootloader
-	$(MAKE) kernel
+image: cleanimages limine kernel
+	mkdir -p iso_root
+	mkdir -p iso_root/boot
+	mkdir -p iso_root/static_data
 
-	dd if=/dev/zero of=$(OSNAME).img bs=512 count=93750
-	mformat -i $(OSNAME).img -f 1440 ::
+	cp limine.cfg limine/limine.sys limine/limine-cd.bin limine/limine-eltorito-efi.bin iso_root/
+	cp $(KERNELDIR)/bin/kernel.elf limine/BOOTX64.EFI iso_root/boot/
+	cp -rf static_data/* iso_root/static_data/
 
-	mmd -i $(OSNAME).img ::/EFI
-	mmd -i $(OSNAME).img ::/EFI/BOOT
-	mmd -i $(OSNAME).img ::/STATIC_SOURCES
-	mmd -i $(OSNAME).img ::/STATIC_SOURCES/FONTS
-
-	mcopy -i $(OSNAME).img $(BOOTEFI) ::/EFI/BOOT
-	mcopy -i $(OSNAME).img startup.nsh ::
-	mcopy -i $(OSNAME).img $(KERNELPATH) ::
-	mcopy -i $(OSNAME).img static_data/fonts/* ::/STATIC_SOURCES/FONTS
-	cp $(OSNAME).img $(OSNAME).hdd
+	xorriso -as mkisofs -b limine-cd.bin \
+		-no-emul-boot -boot-load-size 4 -boot-info-table \
+		--efi-boot limine-eltorito-efi.bin \
+		-efi-boot-part --efi-boot-image --protective-msdos-label \
+		iso_root -o $(OSNAME).iso
+	limine/limine-install $(OSNAME).iso
+	rm -rf iso_root
 
 rebuildimage: rebuildkernel image
 
@@ -45,44 +40,26 @@ rebuildkernel:
 	cd kernel && $(MAKE) clean
 	$(MAKE) kernel
 
-bootloader:
-	cd gnu-efi && $(MAKE)
-	cd gnu-efi && $(MAKE) bootloader
+limine:
+	git clone https://github.com/limine-bootloader/limine.git --branch=v2.4-binary --depth=1
+	make -C limine
 
 rebuild: clean
 	$(MAKE) all
 
 cleanimages:
-	rm -f $(OSNAME).img
-	rm -f $(OSNAME).hdd
+	rm -rf iso_root
+	rm -f $(OSNAME).iso
 
 clean: cleanimages
-	cd gnu-efi && $(MAKE) clean
 	cd kernel && $(MAKE) clean
-	rm -rf $(OVMFDIR)
-	rm -rf flash_folder
-
-$(OVMFDIR):
-	git clone git@github.com:Matesxs/OVMFbin.git
+	rm -rf limine
 
 run: image
 	$(MAKE) run_only
 
-run_only: OVMFbin
-	qemu-system-x86_64 -smp 2 -machine q35 -drive file=$(OSNAME).img,format=raw -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
+run_only:
+	qemu-system-x86_64 -smp 4 -machine q35 -cdrom $(OSNAME).iso -cpu qemu64 -net none
 
-run_debug: OVMFbin kernel_debug image
-	qemu-system-x86_64 -s -S -smp 2 -machine q35 -drive file=$(OSNAME).img,format=raw -m 2G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file=$(OVMFDIR)/OVMF_CODE-pure-efi.fd,readonly=on -drive if=pflash,format=raw,unit=1,file=$(OVMFDIR)/OVMF_VARS-pure-efi.fd -net none
-	
-flash:
-	rm -rf flash_folder
-
-	mkdir flash_folder
-	mkdir flash_folder/EFI
-	mkdir flash_folder/EFI/BOOT
-	mkdir flash_folder/STATIC_SOURCES
-	mkdir flash_folder/STATIC_SOURCES/FONTS
-
-	cp $(BOOTEFI) flash_folder/EFI/BOOT/bootx64.efi
-	cp $(KERNELPATH) flash_folder/kernel.elf
-	cp -r static_data/fonts/* flash_folder/STATIC_SOURCES/FONTS/
+run_debug: kernel_debug image
+	qemu-system-x86_64 -s -S -smp 4 -machine q35 -cdrom $(OSNAME).iso -m 2G -cpu qemu64 -net none

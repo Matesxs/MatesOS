@@ -4,5 +4,4 @@
 *.hdd
 *.iso
 *.lock
-OVMFbin/
-flash_folder/
+limine/

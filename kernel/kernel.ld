@@ -3,9 +3,13 @@ ENTRY(_start)
 
 SECTIONS
 {
-  . = 0x100000;
-  
+  . = 0xffffffff80200000;
+
   _KernelStart = .;
+  .stivale2hdr : {
+    KEEP(*(.stivale2hdr))
+  }
+  
   .text : ALIGN(0x1000)
   {
     *(.text)

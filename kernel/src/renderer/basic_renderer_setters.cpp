@@ -6,7 +6,7 @@ namespace BasicRenderer
 	{
 		if (x > frameBuffer->Width || y > frameBuffer->Height)
 			return;
-		*(uint32_t *)((uint64_t)frameBuffer->BaseAddress + (x * 4) + (y * frameBuffer->PixelsPerScanline * 4)) = color;
+		((uint32_t*)frameBuffer->BaseAddress)[y * (frameBuffer->PixPitch / sizeof(uint32_t)) + x] = color;
 	}
 
   void Renderer::SetFont(PSF1_FONT *_font)
