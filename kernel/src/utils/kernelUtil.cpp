@@ -141,18 +141,9 @@ void PrepareACPI(BootInfo *bootInfo)
   InitAPIC(xsdt);
 }
 
-void InitializeKernel(BootInfo *bootInfo)
+void printCPUInfo()
 {
-  memset(&_BSSStart, 0, (uint64_t)&_KernelEnd - (uint64_t)&_BSSStart);
-
-  BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
-  BasicRenderer::g_Renderer.ClearScreen();
-  BasicRenderer::g_Renderer.SetCursor(50, 0);
-  showSuccess("Frame buffer initialized");
-
-  CPU::feature::cpu_enable_features();
   CPU::CPUInfo cpuInfo = CPU::GetCPUInfo();
-  showSuccess("CPU Info loaded");
 
   printStatsSpacing();
   printStats("Vendor: ");
@@ -174,6 +165,20 @@ void InitializeKernel(BootInfo *bootInfo)
   if (CPU::feature::X2APIC()) printStats("X2APIC ");
   if (CPU::feature::SSE()) printStats("SSE ");
   statNewLine();
+}
+
+void InitializeKernel(BootInfo *bootInfo)
+{
+  memset(&_BSSStart, 0, (uint64_t)&_KernelEnd - (uint64_t)&_BSSStart);
+
+  BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
+  BasicRenderer::g_Renderer.ClearScreen();
+  BasicRenderer::g_Renderer.SetCursor(50, 0);
+  showSuccess("Frame buffer initialized");
+
+  CPU::feature::cpu_enable_features();
+  showSuccess("CPU Info loaded");
+  printCPUInfo();
 
   GDTDescriptor gdtDescriptor;
   gdtDescriptor.Size = sizeof(GDT) - 1;
