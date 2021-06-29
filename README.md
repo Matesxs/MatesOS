@@ -50,7 +50,7 @@ clean - clean every compiled file \
 cleanimages - clean OS images \
 run - compile bootloader, kernel and create image file and run QEMU virtual machine using that image \
 run_only - dont build anything only run from existing image file \
-run_debug - clean compiled files, add -g flag for C++ compilation, compile bootloader, kernel and create image file and run QEMU virtual machine using that image and wait for gdb to connect on localhost:1234 (dont forgot to load symbol table from kernel/bin/kernel.elf) \
+run_debug - clean compiled files, add -g flag for C++ compilation, compile bootloader, kernel and create image file and run QEMU virtual machine using that image and wait for gdb to connect on localhost:1234 (dont forgot to load symbol table from kernel/bin/kernel.elf)
 
 ## Screenshots
 ![scr1](media/scr1.jpg?raw=true)

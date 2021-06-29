@@ -69,7 +69,7 @@ namespace APIC
           s_madt_info.nmis[s_madt_info.nmis_num] = nmi;
           s_madt_info.nmis_num++;
 
-          printStats("   - ");
+          printStatsSpacing();
           printStats("Non-Maskable Interrupt ID: ");
           printStats(to_string((uint64_t)nmi->local_apic_id));
           statNewLine();
@@ -81,7 +81,7 @@ namespace APIC
           MADTLocalAPICAddressOverride* local_apic_override = (MADTLocalAPICAddressOverride*)header;
           local_apic_ptr = (void*)local_apic_override->local_apic_address;
 
-          printStats("   - ");
+          printStatsSpacing();
           showWarning("Local PIC Address changed");
           printStats("New address: 0x");
           printStats(to_hstring(local_apic_override->local_apic_address));
@@ -97,9 +97,22 @@ namespace APIC
     if (s_madt_info.local_apic_ptr != nullptr)
     {
       showSuccess("MADT Initialized");
-      printStats("   - ");
-      printStats("Bootstrap processor APIC Address: 0x");
+
+      printStatsSpacing();
+      printStats("Local APIC Address: 0x");
       printStats(to_hstring((uint64_t)s_madt_info.local_apic_ptr));
+      printStats(", ID: ");
+      printStats(to_string((uint64_t)lapic_get_id()));
+      statNewLine();
+
+      printStatsSpacing();
+      printStats("IOAPIC Count: ");
+      printStats(to_string(s_madt_info.ioapics_num));
+      statNewLine();
+
+      printStatsSpacing();
+      printStats("ISO Count: ");
+      printStats(to_string(s_madt_info.isos_num));
       statNewLine();
       return true;
     }
