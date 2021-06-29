@@ -21,11 +21,12 @@ SECTIONS
     *(.rodata)
   }
 
-  _BSSStart = .;
+  _WritableStart = .;
   .bss : ALIGN(0x1000)
   {
     *(COMMON)
     *(.bss)
   }
+  _WritableEnd = .;
   _KernelEnd = .;
 }

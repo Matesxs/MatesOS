@@ -7,10 +7,10 @@
 
 namespace memory
 {
-  void *heapStart;
-  void *heapEnd;
+  void *heapStart = NULL;
+  void *heapEnd = NULL;
 
-  HeapSegHdr *LastHdr;
+  HeapSegHdr *LastHdr = NULL;
   uint64_t usedPages = 0;
   size_t start_page_count = 0;
 

@@ -172,7 +172,7 @@ void printCPUInfo()
 
 void InitializeKernel(BootInfo *bootInfo)
 {
-  memset(&_BSSStart, 0, (uint64_t)&_KernelEnd - (uint64_t)&_BSSStart);
+  memset(&_WritableStart, 0, (uint64_t)&_WritableEnd - (uint64_t)&_WritableStart);
 
   BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
   BasicRenderer::g_Renderer.ClearScreen();

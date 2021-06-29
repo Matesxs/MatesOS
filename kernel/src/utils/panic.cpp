@@ -6,7 +6,8 @@ void Panic(const char *message)
 {
   asm ("cli");
 
-  BasicRenderer::g_Renderer.ClearScreen(BasicRenderer::BR_RED);
+  BasicRenderer::g_Renderer.SetBackColor(BasicRenderer::BR_RED);
+  BasicRenderer::g_Renderer.ClearScreen();
   BasicRenderer::g_Renderer.SetCursor(400, 300);
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_BLACK);
   BasicRenderer::g_Renderer.Print("Kernel Panic");
