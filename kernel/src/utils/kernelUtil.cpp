@@ -33,19 +33,11 @@ void PrepareMemory(BootInfo *bootInfo)
   memory::g_PageTableManager = memory::PageTableManager(PML4);
 
   uint64_t memorySize = GetMemorySize(bootInfo->mMap, mMapEntries, bootInfo->mMapDescSize);
-  // for (uint64_t t = (uint64_t)bootInfo->mMap->physAddr; t < memorySize; t += 0x1000)
-  // {
-  //   memory::g_PageTableManager.IndentityMapMemory((void *)t);
-  // }
 
   memory::g_PageTableManager.IndentityMapMemory(bootInfo->mMap->physAddr, memorySize);
 
   uint64_t fbSize = (uint64_t)bootInfo->framebuffer->BufferSize + 0x1000;
   memory::g_Allocator.LockPages(bootInfo->framebuffer->BaseAddress, fbSize / 0x1000 + 1);
-  // for (uint64_t t = fbBase; t < fbBase + fbSize; t += 4096)
-  // {
-  //   memory::g_PageTableManager.IndentityMapMemory((void *)t);
-  // }
 
   memory::g_PageTableManager.IndentityMapMemory(bootInfo->framebuffer->BaseAddress, fbSize);
 
