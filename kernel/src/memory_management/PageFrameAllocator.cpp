@@ -72,9 +72,10 @@ namespace memory
     {
       if (bitmap_get(&g_pageframemap, pageBitmapIndex) == true)
       {
-        continue; // not free
+        continue;
       }
-      void *page = (void *)(pageBitmapIndex * 4096); // transform the index into the page address
+      void *page = (void *)(pageBitmapIndex * 4096);
+      
       pageBitmapIndex++;
       LockPage(page);
 
@@ -88,7 +89,7 @@ namespace memory
   {
     if (bitmap_get(&g_pageframemap, index) == state)
     {
-      return true; // already in state
+      return true;
     }
     return bitmap_set(&g_pageframemap, index, state);
   }
@@ -98,11 +99,9 @@ namespace memory
     uint64_t index = (uint64_t)address / 4096;
     if (pageframe_manipulate(index, false))
     {
-      if (usedMemory >= 4096)
-      { // prevent overflow
-        usedMemory -= 4096;
-        freeMemory += 4096;
-      }
+      if (usedMemory >= 4096) usedMemory -= 4096;
+      freeMemory += 4096;
+
       if (pageBitmapIndex > index)
       {
         pageBitmapIndex = index;
@@ -124,7 +123,7 @@ namespace memory
     if (pageframe_manipulate(index, true))
     {
       usedMemory += 4096;
-      freeMemory -= 4096;
+      if (freeMemory >= 4096) freeMemory -= 4096;
     }
   }
 
@@ -141,11 +140,9 @@ namespace memory
     uint64_t index = (uint64_t)address / 4096;
     if (pageframe_manipulate(index, false))
     {
-      if (reservedMemory >= 4096)
-      { // prevent overflow
-        reservedMemory -= 4096;
-        freeMemory += 4096;
-      }
+      if (reservedMemory >= 4096) reservedMemory -= 4096;
+      freeMemory += 4096;
+
       if (pageBitmapIndex > index)
       {
         pageBitmapIndex = index;
