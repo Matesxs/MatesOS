@@ -1,14 +1,14 @@
 #pragma once
-#include "../utils/efiMemory.h"
 #include <stdint.h>
 #include "../utils/Bitmap.h"
+#include "../stivale/stivale2.h"
 
 namespace memory
 {
   class PageFrameAllocator
   {
   public:
-    void ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR *mMap, size_t mMapSize, size_t mMapDescSize);
+    void ReadMemoryMap(stivale2_mmap_entry *memory_map, size_t memory_entries);
     Bitmap PageBitmap;
     void FreePage(void *address);
     void FreePages(void *address, uint64_t pageCount);
@@ -29,10 +29,10 @@ namespace memory
     void InitBitmap(size_t bitmapSize, void *bufferAddress);
 
     // bool Initialized = false;
-    uint64_t totalMemory;
-    uint64_t freeMemory;
-    uint64_t reservedMemory;
-    uint64_t usedMemory;
+    uint64_t totalMemory = 0;
+    uint64_t freeMemory = 0;
+    uint64_t reservedMemory = 0;
+    uint64_t usedMemory = 0;
   };
 
   extern PageFrameAllocator g_Allocator;

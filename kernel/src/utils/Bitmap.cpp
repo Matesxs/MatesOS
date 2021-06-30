@@ -1,41 +1,40 @@
 #include "Bitmap.h"
+#include "../library/memory.h"
 
-bool Bitmap::operator[](uint64_t index)
-{
-  return Get(index);
+void bitmap_initialize(Bitmap* bitmap, void* buffer, size_t size) {
+	bitmap->buffer = (uint8_t*)buffer;
+	bitmap->size = size;
+	memset(bitmap->buffer, 0, size);
 }
 
-bool Bitmap::Get(uint64_t index)
-{
-  if (index > Size * 8)
-    return false;
-
-  uint64_t byteIndex = index / 8;
-  uint8_t bitIndex = index % 8;
-  uint8_t bitIndexer = 0b10000000 >> bitIndex;
-
-  if ((Buffer[byteIndex] & bitIndexer) > 0)
-  {
-    return true;
-  }
-
-  return false;
+size_t bitmap_adjusted_size(Bitmap* bitmap) {
+	return bitmap->size * BITMAP_SCALE;
 }
 
-bool Bitmap::Set(uint64_t index, bool value)
-{
-  if (index > Size * 8)
-    return false;
+bool bitmap_get(Bitmap* bitmap, size_t index) {
+	if(index > bitmap_adjusted_size(bitmap)) {	// out of range
+		return false;
+	}
+	uint64_t byte_index = index / BITMAP_SCALE;
+	uint8_t bit_index = index % BITMAP_SCALE;
+	uint8_t bit_selector = 0b10000000 >> bit_index;
+	if((bitmap->buffer[byte_index] & bit_selector) != 0){
+		return true;
+	}
+	return false;
+}
 
-  uint64_t byteIndex = index / 8;
-  uint8_t bitIndex = index % 8;
-  uint8_t bitIndexer = 0b10000000 >> bitIndex;
-  Buffer[byteIndex] &= ~bitIndexer;
-
-  if (value)
-  {
-    Buffer[byteIndex] |= bitIndexer;
-  }
-  
-  return true;
+bool bitmap_set(Bitmap* bitmap, size_t index, bool value) {
+	if(index > bitmap_adjusted_size(bitmap)) {	// out of range
+		return false;
+	}
+	uint64_t byte_index = index / BITMAP_SCALE;
+	uint8_t bit_index = index % BITMAP_SCALE;
+	uint8_t bit_selector = 0b10000000 >> bit_index;
+	if(value){
+		bitmap->buffer[byte_index] |= bit_selector;		// force the bit on
+	} else {
+		bitmap->buffer[byte_index] &= ~bit_selector;	// force the bit off
+	}
+	return true;
 }

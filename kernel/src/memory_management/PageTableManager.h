@@ -1,14 +1,16 @@
 #pragma once
 #include "paging.h"
 #include "stddef.h"
+#include "../stivale/stivale2.h"
 
 namespace memory
 {
   class PageTableManager
   {
   public:
-    PageTableManager(PageTable *PML4Address);
-    PageTable *PML4;
+    PageTableManager();
+    PageTableManager(stivale2_mmap_entry *memory_map, size_t memory_entries);
+    PageTable *PML4 = NULL;
 
     void* MapMemory(void *virtualMemory, void *physicalMemory);
     void* IndentityMapMemory(void *address);

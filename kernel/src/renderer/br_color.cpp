@@ -3,7 +3,7 @@
 namespace BasicRenderer
 {
   Color __CURSOR_COLOR = {240, 240, 240};
-  Color __BACKGROUND_COLOR = {13, 0, 72};
+  Color __BACKGROUND_COLOR = {5, 0, 40};
   Color BR_WHITE = {255, 255, 255};
   Color BR_BLACK = {0, 0, 0};
   Color BR_GRAY = {200, 200, 200};

@@ -59,7 +59,7 @@ run: image
 	$(MAKE) run_only
 
 run_only:
-	qemu-system-x86_64 -smp 4 -machine q35 -cdrom $(OSNAME).iso -cpu qemu64 -net none
+	qemu-system-x86_64 -smp 4 -machine q35 -cdrom $(OSNAME).iso -m 2G -cpu qemu64 -net none
 
 run_debug: kernel_debug image
 	qemu-system-x86_64 -s -S -smp 4 -machine q35 -cdrom $(OSNAME).iso -m 2G -cpu qemu64 -net none

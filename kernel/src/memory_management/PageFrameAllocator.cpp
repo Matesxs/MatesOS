@@ -2,109 +2,111 @@
 #include "../renderer/stat_logger.h"
 #include "../utils/panic.h"
 #include "../library/string.h"
+#include "../utils/helpers.h"
+#include "memory_entry.h"
 
 namespace memory
 {
   bool Initialized = false;
   PageFrameAllocator g_Allocator;
+  Bitmap g_pageframemap;
 
-  void PageFrameAllocator::ReadEFIMemoryMap(EFI_MEMORY_DESCRIPTOR *mMap, size_t mMapSize, size_t mMapDescSize)
+  void PageFrameAllocator::ReadMemoryMap(stivale2_mmap_entry *memory_map, size_t memory_entries)
   {
-    if (Initialized) return;
+    if (Initialized)
+      return;
     Initialized = true;
 
-    showInfo("Reading EFI Memory Map");
+    void *largestMemory = NULL;
+    size_t largestMemorySize = 0;
 
-    if (mMap == nullptr || mMapSize == 0 || mMapDescSize == 0 || \
-        mMapDescSize > mMapSize)
+    // Find largest primary memory region
+    for (size_t i = 0; i < memory_entries; i++)
     {
-      Panic("PageFrameAllocator get invalid EFI_MEMORY_DESCRIPTOR");
-    }
+      stivale2_mmap_entry memorymap_entry = memory_map[i];
 
-    uint64_t mMapEntries = mMapSize / mMapDescSize;
-
-    void *largestFreeMemSeg = NULL;
-    size_t largestFreeMemSegSize = 0;
-
-    for (uint64_t i = 0; i < mMapEntries; i++)
-    {
-      EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
-      if (desc->type == EfiConventionalMemory)
+      if (memorymap_entry.type == STIVALE2_MMAP_USABLE ||
+           memorymap_entry.type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE)
       {
-        if (desc->numPages * 4096 > largestFreeMemSegSize)
+        if (largestMemory == NULL || memorymap_entry.length > largestMemorySize)
         {
-          largestFreeMemSeg = desc->physAddr;
-          largestFreeMemSegSize = desc->numPages * 4096;
+          largestMemory = (void *)memorymap_entry.base;
+          largestMemorySize = memorymap_entry.length;
         }
       }
     }
 
-    if (largestFreeMemSeg == NULL) Panic("Failed to get free memory segment from EFI memory descriptor");
+    totalMemory = GetMemorySize(memory_map, memory_entries);
+    bitmap_initialize(&g_pageframemap, largestMemory, totalMemory / 4096 / BITMAP_SCALE);
+    ReservePages(0, NEAREST_PAGE(totalMemory));
 
-    totalMemory = GetMemorySize(mMap, mMapEntries, mMapDescSize);
-    freeMemory = totalMemory;
-    uint64_t bitmapSize = totalMemory / 4096 / 8 + 1;
-
-    InitBitmap(bitmapSize, largestFreeMemSeg);
-
-    uint64_t totalPages = totalMemory / 4096 + 1;
-    ReservePages(0, totalPages);
-
-    printStatsSpacing();
-    printStats("Found ");
-    printStats(to_string(totalPages));
-    printStats(" free memory pages");
-    statNewLine();
-
-    for (uint64_t i = 0; i < mMapEntries; i++)
+    for (size_t i = 0; i < memory_entries; i++)
     {
-      EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint64_t)mMap + (i * mMapDescSize));
-      if (desc->type == EfiConventionalMemory)
+      stivale2_mmap_entry memorymap_entry = memory_map[i];
+      if (memorymap_entry.type != STIVALE2_MMAP_USABLE &&
+          memorymap_entry.type != STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE)
       {
-        UnreservePages(desc->physAddr, desc->numPages);
+        continue;
       }
+
+      UnreservePages((void *)memorymap_entry.base, NEAREST_PAGE(memorymap_entry.length));
     }
 
-    ReservePages(0, 0x100);
-    LockPages(PageBitmap.Buffer, PageBitmap.Size / 4096 + 1);
-  }
+    // Lock the s_pageframemap itself
+    size_t pageframemap_pages = NEAREST_PAGE(g_pageframemap.size);
+    LockPages(g_pageframemap.buffer, pageframemap_pages);
 
-  void PageFrameAllocator::InitBitmap(size_t bitmapSize, void *bufferAddress)
-  {
-    PageBitmap.Size = bitmapSize;
-    PageBitmap.Buffer = (uint8_t *)bufferAddress;
-    for (size_t i = 0; i < bitmapSize; i++)
-    {
-      *(uint8_t *)(PageBitmap.Buffer + i) = 0;
-    }
+    // Lock kernel space
+    size_t kernel_size = (size_t)&_KernelEnd - (size_t)&_KernelStart;
+    size_t kernel_pages = NEAREST_PAGE(kernel_size);
+    LockPages(KERNEL_PHYSICAL_ADDRESS(&_KernelStart), kernel_pages);
+
+    // Reserve first 256 pages
+    ReservePages(0, 256);
   }
 
   uint64_t pageBitmapIndex = 0;
   void *PageFrameAllocator::RequestPage()
   {
-    for (; pageBitmapIndex < PageBitmap.Size * 8; pageBitmapIndex++)
+    for (; pageBitmapIndex < bitmap_adjusted_size(&g_pageframemap); pageBitmapIndex++)
     {
-      if (PageBitmap[pageBitmapIndex] == true)
-        continue;
-      LockPage((void *)(pageBitmapIndex * 4096));
-      return (void *)(pageBitmapIndex * 4096);
+      if (bitmap_get(&g_pageframemap, pageBitmapIndex) == true)
+      {
+        continue; // not free
+      }
+      void *page = (void *)(pageBitmapIndex * 4096); // transform the index into the page address
+      pageBitmapIndex++;
+      LockPage(page);
+
+      return page;
     }
 
     return NULL; // Page Frame Swap to file
   }
 
+  bool pageframe_manipulate(uint64_t index, bool state)
+  {
+    if (bitmap_get(&g_pageframemap, index) == state)
+    {
+      return true; // already in state
+    }
+    return bitmap_set(&g_pageframemap, index, state);
+  }
+
   void PageFrameAllocator::FreePage(void *address)
   {
     uint64_t index = (uint64_t)address / 4096;
-    if (PageBitmap[index] == false)
-      return;
-
-    if (PageBitmap.Set(index, false))
+    if (pageframe_manipulate(index, false))
     {
-      freeMemory += 4096;
-      usedMemory -= 4096;
+      if (usedMemory >= 4096)
+      { // prevent overflow
+        usedMemory -= 4096;
+        freeMemory += 4096;
+      }
       if (pageBitmapIndex > index)
+      {
         pageBitmapIndex = index;
+      }
     }
   }
 
@@ -119,13 +121,10 @@ namespace memory
   void PageFrameAllocator::LockPage(void *address)
   {
     uint64_t index = (uint64_t)address / 4096;
-    if (PageBitmap[index] == true)
-      return;
-
-    if (PageBitmap.Set(index, true))
+    if (pageframe_manipulate(index, true))
     {
-      freeMemory -= 4096;
       usedMemory += 4096;
+      freeMemory -= 4096;
     }
   }
 
@@ -140,14 +139,17 @@ namespace memory
   void PageFrameAllocator::UnreservePage(void *address)
   {
     uint64_t index = (uint64_t)address / 4096;
-    if (PageBitmap[index] == false)
-      return;
-    if (PageBitmap.Set(index, false))
+    if (pageframe_manipulate(index, false))
     {
-      freeMemory += 4096;
-      reservedMemory -= 4096;
+      if (reservedMemory >= 4096)
+      { // prevent overflow
+        reservedMemory -= 4096;
+        freeMemory += 4096;
+      }
       if (pageBitmapIndex > index)
+      {
         pageBitmapIndex = index;
+      }
     }
   }
 
@@ -162,11 +164,8 @@ namespace memory
   void PageFrameAllocator::ReservePage(void *address)
   {
     uint64_t index = (uint64_t)address / 4096;
-    if (PageBitmap[index] == true)
-      return;
-    if (PageBitmap.Set(index, true))
+    if (pageframe_manipulate(index, true))
     {
-      freeMemory -= 4096;
       reservedMemory += 4096;
     }
   }
