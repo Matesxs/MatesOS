@@ -204,12 +204,11 @@ void InitializeKernel(BootInfo *bootInfo)
   outb(PIC2_DATA, 0b11101111);
 
   PrepareACPI(bootInfo);
+  showSuccess("ACPI Prepared");
 
   // Load all drivers
   if (driver::g_DriverManager.get_num_of_drivers() > 0) driver::g_DriverManager.activate_all();
   else showWarning("No drivers to load");
-
-  showSuccess("Kernel initialized successfully");
 
   memory::WalkHeap();
 
