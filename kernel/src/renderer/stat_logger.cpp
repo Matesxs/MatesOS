@@ -29,8 +29,6 @@ void sizePrint(uint64_t size)
     BasicRenderer::g_Renderer.Print(to_string((uint64_t)size));
     BasicRenderer::g_Renderer.Print(" B");
   }
-
-  BasicRenderer::g_Renderer.NewLine();
 }
 
 void ShowBasicFrameBuffer()
@@ -56,6 +54,15 @@ void ShowBasicFrameBuffer()
   BasicRenderer::g_Renderer.Print("   Frame buffer size:    ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
   sizePrint(fbuff.BufferSize);
+
+  BasicRenderer::g_Renderer.NewLine();
+  Point grid = BasicRenderer::g_Renderer.GetGrid();
+  BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
+  BasicRenderer::g_Renderer.Print("   Frame grid:           ");
+  BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
+  BasicRenderer::g_Renderer.Print(to_string(grid.X));
+  BasicRenderer::g_Renderer.Print("x");
+  BasicRenderer::g_Renderer.Print(to_string(grid.Y));
 }
 
 void ShowHeap()
@@ -70,6 +77,7 @@ void ShowHeap()
   BasicRenderer::g_Renderer.Print("   Heap size:            ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
   sizePrint(memory::GetHeapPages() * 4096);
+  BasicRenderer::g_Renderer.NewLine();
 }
 
 void ShowRAM()
@@ -79,20 +87,25 @@ void ShowRAM()
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
   sizePrint(memory::g_Allocator.GetTotalMemory());
 
+  BasicRenderer::g_Renderer.NewLine();
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Free RAM:             ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
   sizePrint(memory::g_Allocator.GetFreeMemory());
 
+  BasicRenderer::g_Renderer.NewLine();
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Used RAM:             ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
   sizePrint(memory::g_Allocator.GetUsedMemory());
 
+  BasicRenderer::g_Renderer.NewLine();
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_DARK_CYAN);
   BasicRenderer::g_Renderer.Print("   Reserved RAM:         ");
   BasicRenderer::g_Renderer.SetColor(BasicRenderer::BR_CYAN);
   sizePrint(memory::g_Allocator.GetReservedMemory());
+
+  BasicRenderer::g_Renderer.NewLine();
 }
 
 void ShowOSStats()
@@ -108,7 +121,7 @@ void ShowOSStats()
 
 void ShowOSStats(unsigned int x, unsigned int y)
 {
-  uint32_t tmpColor = BasicRenderer::g_Renderer.GetColor();
+  BasicRenderer::Color tmpColor = BasicRenderer::g_Renderer.GetColor();
   uint32_t tmpX = BasicRenderer::g_Renderer.GetCursorX();
   uint32_t tmpY = BasicRenderer::g_Renderer.GetCursorY();
 
@@ -170,13 +183,13 @@ void showInfo(const char *message)
   BasicRenderer::g_Renderer.NewLine();
 }
 
-void printStats(const char *message, uint32_t color)
+void printStats(const char *message, BasicRenderer::Color color)
 {
   BasicRenderer::g_Renderer.SetColor(color);
   BasicRenderer::g_Renderer.Print(message);
 }
 
-void printStatsSpacing(uint32_t color)
+void printStatsSpacing(BasicRenderer::Color color)
 {
   BasicRenderer::g_Renderer.SetColor(color);
   BasicRenderer::g_Renderer.Print("   - ");

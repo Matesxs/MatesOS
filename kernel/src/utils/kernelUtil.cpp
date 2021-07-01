@@ -166,9 +166,8 @@ void InitializeKernel(BootInfo *bootInfo)
 {
   memset(&_WritableStart, 0, (uint64_t)&_WritableEnd - (uint64_t)&_WritableStart);
 
-  BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, bootInfo->psf1_Font, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
+  BasicRenderer::InitGlobalBasicRenderer(bootInfo->framebuffer, Point{4, 0}, bootInfo->psf1_Font, 8, 16, BasicRenderer::BR_WHITE, BasicRenderer::__BACKGROUND_COLOR);
   BasicRenderer::g_Renderer.ClearScreen();
-  BasicRenderer::g_Renderer.SetCursor(50, 0);
   showSuccess("Frame buffer initialized");
 
   CPU::feature::cpu_enable_features();

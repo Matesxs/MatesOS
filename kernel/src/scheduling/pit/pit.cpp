@@ -22,7 +22,8 @@ namespace PIT
 
   void SetDivisor(uint16_t divisor)
   {
-    if (divisor < 100) divisor = 100;
+    if (divisor > 100) divisor = 100;
+    if (divisor < 1) divisor = 1;
     Divisor = divisor;
 
     outb(0x40, (uint8_t)(divisor & 0x00ff));
@@ -37,6 +38,7 @@ namespace PIT
 
   void SetFrequency(uint64_t frequency)
   {
+    if (frequency > BaseFrequency) frequency = BaseFrequency;
     SetDivisor(BaseFrequency / frequency);
   }
 

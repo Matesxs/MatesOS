@@ -4,22 +4,35 @@
 
 namespace BasicRenderer
 {
-  extern uint32_t __CURSOR_COLOR;
-  extern uint32_t __BACKGROUND_COLOR;
-  extern uint32_t BR_WHITE;
-  extern uint32_t BR_BLACK;
-  extern uint32_t BR_GRAY;
-  extern uint32_t BR_DARK_GRAY;
-  extern uint32_t BR_RED;
-  extern uint32_t BR_DARK_RED;
-  extern uint32_t BR_GREEN;
-  extern uint32_t BR_DARK_GREEN;
-  extern uint32_t BR_BLUE;
-  extern uint32_t BR_DARK_BLUE;
-  extern uint32_t BR_CYAN;
-  extern uint32_t BR_DARK_CYAN;
-  extern uint32_t BR_YELLOW;
-  extern uint32_t BR_DARK_YELLOW;
-  extern uint32_t BR_PURPLE;
-  extern uint32_t BR_DARK_PURPLE;
+  struct Color
+  {
+    /** Red */
+    uint8_t r;
+    /** Green */
+    uint8_t g;
+    /** Blue */
+    uint8_t b;
+  };
+
+  extern Color __CURSOR_COLOR;
+  extern Color __BACKGROUND_COLOR;
+  extern Color BR_WHITE;
+  extern Color BR_BLACK;
+  extern Color BR_GRAY;
+  extern Color BR_DARK_GRAY;
+  extern Color BR_RED;
+  extern Color BR_DARK_RED;
+  extern Color BR_GREEN;
+  extern Color BR_DARK_GREEN;
+  extern Color BR_BLUE;
+  extern Color BR_DARK_BLUE;
+  extern Color BR_CYAN;
+  extern Color BR_DARK_CYAN;
+  extern Color BR_YELLOW;
+  extern Color BR_DARK_YELLOW;
+  extern Color BR_PURPLE;
+  extern Color BR_DARK_PURPLE;
+
+  Color rgb(uint8_t r, uint8_t g, uint8_t b);
+  uint32_t fromColor(Color color);
 }

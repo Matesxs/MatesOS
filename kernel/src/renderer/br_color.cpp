@@ -2,22 +2,32 @@
 
 namespace BasicRenderer
 {
-  uint32_t __CURSOR_COLOR = 0xfffefefe;
-  uint32_t __BACKGROUND_COLOR = 0xff000015;
-  uint32_t BR_WHITE = 0xffffffff;
-  uint32_t BR_BLACK = 0xff000000;
-  uint32_t BR_GRAY = 0xffc8c8c8;
-  uint32_t BR_DARK_GRAY = 0xff646464;
-  uint32_t BR_RED = 0xffff0000;
-  uint32_t BR_DARK_RED = 0xff500000;
-  uint32_t BR_GREEN = 0xff00ff00;
-  uint32_t BR_DARK_GREEN = 0xff005000;
-  uint32_t BR_BLUE = 0xff0000ff;
-  uint32_t BR_DARK_BLUE = 0xff000050;
-  uint32_t BR_CYAN = 0xff00ffff;
-  uint32_t BR_DARK_CYAN = 0xff006464;
-  uint32_t BR_YELLOW = 0xffffff00;
-  uint32_t BR_DARK_YELLOW = 0xff505000;
-  uint32_t BR_PURPLE = 0xffff00ff;
-  uint32_t BR_DARK_PURPLE = 0xff500050;
+  Color __CURSOR_COLOR = {240, 240, 240};
+  Color __BACKGROUND_COLOR = {5, 0, 40};
+  Color BR_WHITE = {255, 255, 255};
+  Color BR_BLACK = {0, 0, 0};
+  Color BR_GRAY = {200, 200, 200};
+  Color BR_DARK_GRAY = {100, 100, 100};
+  Color BR_RED = {255, 0, 0};
+  Color BR_DARK_RED = {127, 0, 0};
+  Color BR_GREEN = {0, 255, 0};
+  Color BR_DARK_GREEN = {0, 127, 0};
+  Color BR_BLUE = {0, 0, 255};
+  Color BR_DARK_BLUE = {0, 0, 127};
+  Color BR_CYAN = {0, 255, 255};
+  Color BR_DARK_CYAN = {0, 127, 127};
+  Color BR_YELLOW = {255, 255, 0};
+  Color BR_DARK_YELLOW = {127, 127, 0};
+  Color BR_PURPLE = {255, 0, 255};
+  Color BR_DARK_PURPLE = {127, 0, 127};
+
+  Color rgb(uint8_t r, uint8_t g, uint8_t b)
+  {
+    return (Color){r, g, b};
+  }
+
+  uint32_t fromColor(Color color)
+  {
+    return ((color.r & 0xff) << 16) + ((color.g & 0xff) << 8) + (color.b & 0xff);
+  }
 }

@@ -3,44 +3,49 @@
 namespace BasicRenderer
 {
   unsigned int Renderer::GetCursorX()
-	{
-		return textCursorPos.X;
-	}
+  {
+    return textCursorPos.X;
+  }
 
-	unsigned int Renderer::GetCursorY()
-	{
-		return textCursorPos.Y;
-	}
+  unsigned int Renderer::GetCursorY()
+  {
+    return textCursorPos.Y;
+  }
 
-	uint64_t Renderer::GetHeight()
-	{
-		return frameBuffer->Height;
-	}
+  uint64_t Renderer::GetHeight()
+  {
+    return frameBuffer->Height;
+  }
 
-	uint64_t Renderer::GetWidth()
-	{
-		return frameBuffer->Width;
-	}
+  uint64_t Renderer::GetWidth()
+  {
+    return frameBuffer->Width;
+  }
 
-  uint32_t Renderer::GetColor()
-	{
-		return color;
-	}
+  Color Renderer::GetColor()
+  {
+    return color;
+  }
 
-	uint32_t Renderer::GetBackColor()
-	{
-		return clearColor;
-	}
+  Color Renderer::GetBackColor()
+  {
+    return clearColor;
+  }
 
   FrameBuffer Renderer::GetFramebuffer()
-	{
-		return *frameBuffer;
-	}
+  {
+    return *frameBuffer;
+  }
 
   uint32_t Renderer::GetPix(uint32_t x, uint32_t y)
-	{
-		if (x > frameBuffer->Width || y > frameBuffer->Height)
-			return BR_BLACK;
-		return *(uint32_t *)((uint64_t)frameBuffer->BaseAddress + (x * 4) + (y * frameBuffer->PixelsPerScanline * 4));
-	}
+  {
+    if (x > frameBuffer->Width || y > frameBuffer->Height)
+      return fromColor(BR_BLACK);
+    return ((uint32_t*)frameBuffer->BaseAddress)[x + y * frameBuffer->PixelsPerScanline];
+  }
+
+  Point Renderer::GetGrid()
+  {
+    return Point{xGridMax, yGridMax};
+  }
 }
