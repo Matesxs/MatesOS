@@ -1,11 +1,11 @@
-#include "ahci.h"
-#include "../renderer/basic_renderer.h"
-#include "../renderer/stat_logger.h"
-#include "../memory_management/PageTableManager.h"
-#include "../memory_management/heap.h"
-#include "../memory_management/PageFrameAllocator.h"
-#include "../library/string.h"
-#include "../library/memory.h"
+#include "ahci.hpp"
+#include "../renderer/basic_renderer.hpp"
+#include "../renderer/stat_logger.hpp"
+#include "../memory_management/PageTableManager.hpp"
+#include "../memory_management/heap.hpp"
+#include "../memory_management/PageFrameAllocator.hpp"
+#include "../library/string.hpp"
+#include "../library/memory.hpp"
 
 namespace AHCI
 {

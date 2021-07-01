@@ -1,5 +1,5 @@
 #include "stdint.h"
-#include "../library/string.h"
+#include "../library/string.hpp"
 
 namespace PCI
 {

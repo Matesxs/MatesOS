@@ -1,5 +1,5 @@
-#include "features.h"
-#include "cpuInfo.h"
+#include "features.hpp"
+#include "cpuInfo.hpp"
 
 namespace CPU
 {

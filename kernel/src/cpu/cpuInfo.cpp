@@ -1,4 +1,4 @@
-#include "cpuInfo.h"
+#include "cpuInfo.hpp"
 
 namespace CPU
 {

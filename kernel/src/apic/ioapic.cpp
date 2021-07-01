@@ -1,4 +1,4 @@
-#include "ioapic.h"
+#include "ioapic.hpp"
 
 namespace APIC
 {

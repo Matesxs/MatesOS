@@ -1,11 +1,11 @@
 #pragma once
 
 #include "stdint.h"
-#include "../acpi/acpi.h"
-#include "../memory_management/PageTableManager.h"
-#include "../renderer/basic_renderer.h"
-#include "../library/string.h"
-#include "pci_enum.h"
+#include "../acpi/acpi.hpp"
+#include "../memory_management/PageTableManager.hpp"
+#include "../renderer/basic_renderer.hpp"
+#include "../library/string.hpp"
+#include "pci_enum.hpp"
 
 namespace PCI
 {

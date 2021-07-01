@@ -1,4 +1,4 @@
-#include "mouse.h"
+#include "mouse.hpp"
 
 uint8_t MousePointer[] = {
   0b11111111, 0b11100000,

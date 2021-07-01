@@ -1,4 +1,4 @@
-#include "paging.h"
+#include "paging.hpp"
 
 namespace memory
 {

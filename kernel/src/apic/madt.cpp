@@ -1,9 +1,9 @@
-#include "madt.h"
-#include "../memory_management/PageTableManager.h"
-#include "../renderer/stat_logger.h"
-#include "../library/string.h"
-#include "../utils/helpers.h"
-#include "../utils/panic.h"
+#include "madt.hpp"
+#include "../memory_management/PageTableManager.hpp"
+#include "../renderer/stat_logger.hpp"
+#include "../library/string.hpp"
+#include "../utils/helpers.hpp"
+#include "../utils/panic.hpp"
 
 namespace APIC
 {

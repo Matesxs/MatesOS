@@ -1,10 +1,10 @@
-#include "facp.h"
-#include "../library/string.h"
-#include "../library/memory.h"
-#include "../renderer/stat_logger.h"
-#include "../IO/IO.h"
-#include "../memory_management/PageTableManager.h"
-#include "../utils/panic.h"
+#include "facp.hpp"
+#include "../library/string.hpp"
+#include "../library/memory.hpp"
+#include "../renderer/stat_logger.hpp"
+#include "../IO/IO.hpp"
+#include "../memory_management/PageTableManager.hpp"
+#include "../utils/panic.hpp"
 
 namespace FACP
 {
@@ -29,8 +29,6 @@ namespace FACP
 
   void InitFACP(ACPI::FACPHeader *facp)
   {
-    showInfo("FACP initializing");
-
     g_FACPHeader = facp;
 
     auto dsdt_addr = (uintptr_t) facp->DSDT;

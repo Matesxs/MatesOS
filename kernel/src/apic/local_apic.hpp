@@ -1,6 +1,6 @@
 #pragma once
 
-#include "madt_types.h"
+#include "madt_types.hpp"
 #include "stddef.h"
 
 #define LAPIC_MSR 0x1b

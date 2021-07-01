@@ -1,4 +1,4 @@
-#include "br_color.h"
+#include "br_color.hpp"
 
 namespace BasicRenderer
 {

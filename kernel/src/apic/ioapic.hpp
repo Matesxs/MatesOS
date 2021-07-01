@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stddef.h"
-#include "madt_types.h"
+#include "madt_types.hpp"
 
 #define IOAPIC_IOREGSEL 0x00
 #define IOAPIC_IOWIN 0x10

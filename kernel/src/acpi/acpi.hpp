@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "stdint.h"
 
 namespace ACPI
 {
@@ -113,6 +113,8 @@ namespace ACPI
     uint32_t Reserved;
   } __attribute__((packed));
 
-  void *FindTable(SDTHeader *sdtHeader, char *signature);
-  int EnumACPI(SDTHeader *sdtHeader);
+  void *FindXSDTTable(SDTHeader *sdtHeader, char *signature);
+  int EnumXSDT(SDTHeader *sdtHeader);
+  void* FindRSDTTable(SDTHeader *sdtHeader, char *signature);
+  int EnumRSDT(SDTHeader *sdtHeader);
 }

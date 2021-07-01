@@ -1,12 +1,12 @@
-#include "utils/kernelUtil.h"
-#include "renderer/basic_renderer.h"
-#include "memory_management/heap.h"
-#include "scheduling/pit/pit.h"
-#include "renderer/stat_logger.h"
-#include "utils/helpers.h"
-#include "library/memory.h"
+#include "utils/kernelUtil.hpp"
+#include "renderer/basic_renderer.hpp"
+#include "memory_management/heap.hpp"
+#include "scheduling/pit/pit.hpp"
+#include "renderer/stat_logger.hpp"
+#include "utils/helpers.hpp"
+#include "library/memory.hpp"
 
-#include "facp/facp.h"
+#include "facp/facp.hpp"
 
 extern "C" void _start(BootInfo *bootInfo)
 {

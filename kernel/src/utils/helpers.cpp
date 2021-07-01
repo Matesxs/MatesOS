@@ -1,5 +1,6 @@
-#include "helpers.h"
+#include "helpers.hpp"
 
+__attribute__((noreturn))
 void halt()
 {
   while (1)

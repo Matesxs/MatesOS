@@ -1,5 +1,5 @@
-#include "pit.h"
-#include "../../IO/IO.h"
+#include "pit.hpp"
+#include "../../IO/IO.hpp"
 
 namespace PIT
 {

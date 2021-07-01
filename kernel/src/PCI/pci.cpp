@@ -1,10 +1,10 @@
-#include "pci.h"
-#include "../ahci/ahci.h"
-#include "../memory_management/heap.h"
-#include "../renderer/stat_logger.h"
-#include "../utils/driver.h"
-#include "../utils/helpers.h"
-#include "../utils/panic.h"
+#include "pci.hpp"
+#include "../ahci/ahci.hpp"
+#include "../memory_management/heap.hpp"
+#include "../renderer/stat_logger.hpp"
+#include "../utils/driver.hpp"
+#include "../utils/helpers.hpp"
+#include "../utils/panic.hpp"
 
 // #define DEBUG
 

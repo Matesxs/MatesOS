@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../utils/math.h"
-#include "framebuffer.h"
-#include "simple_font.h"
-#include "br_color.h"
+#include "../utils/math.hpp"
+#include "framebuffer.hpp"
+#include "simple_font.hpp"
+#include "br_color.hpp"
 #include <stdint.h>
 
 namespace BasicRenderer

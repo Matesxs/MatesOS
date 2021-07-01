@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../IO/IO.h"
-#include "../utils/math.h"
-#include "../renderer/basic_renderer.h"
+#include "../IO/IO.hpp"
+#include "../utils/math.hpp"
+#include "../renderer/basic_renderer.hpp"
 
 #define PS2LeftButton 0b00000001
 #define PS2MiddleButton 0b00000100

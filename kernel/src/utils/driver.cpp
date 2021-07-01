@@ -1,8 +1,8 @@
 #include <stddef.h>
-#include "driver.h"
-#include "../renderer/stat_logger.h"
-#include "../utils/helpers.h"
-#include "../library/string.h"
+#include "driver.hpp"
+#include "../renderer/stat_logger.hpp"
+#include "../utils/helpers.hpp"
+#include "../library/string.hpp"
 
 namespace driver
 {

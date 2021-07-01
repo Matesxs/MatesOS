@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cpuid.h"
+#include "cpuid.hpp"
 
 namespace CPU
 {

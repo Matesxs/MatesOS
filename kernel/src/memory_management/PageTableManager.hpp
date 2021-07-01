@@ -1,5 +1,5 @@
 #pragma once
-#include "paging.h"
+#include "paging.hpp"
 #include "stddef.h"
 
 namespace memory

@@ -1,5 +1,5 @@
-#include "keyboard.h"
-#include "../facp/facp.h"
+#include "keyboard.hpp"
+#include "../facp/facp.hpp"
 
 bool isLeftShiftPressed = false;
 bool isRightShiftPressed = false;

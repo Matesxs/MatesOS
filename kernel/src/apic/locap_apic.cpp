@@ -1,4 +1,4 @@
-#include "madt.h"
+#include "madt.hpp"
 
 namespace APIC
 {

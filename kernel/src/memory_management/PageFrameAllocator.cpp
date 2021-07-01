@@ -1,7 +1,7 @@
-#include "PageFrameAllocator.h"
-#include "../renderer/stat_logger.h"
-#include "../utils/panic.h"
-#include "../library/string.h"
+#include "PageFrameAllocator.hpp"
+#include "../renderer/stat_logger.hpp"
+#include "../utils/panic.hpp"
+#include "../library/string.hpp"
 
 namespace memory
 {

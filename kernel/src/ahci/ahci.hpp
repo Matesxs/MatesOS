@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include "../PCI/pci.h"
-#include "../utils/driver.h"
+#include "../PCI/pci.hpp"
+#include "../utils/driver.hpp"
 
 namespace AHCI
 {

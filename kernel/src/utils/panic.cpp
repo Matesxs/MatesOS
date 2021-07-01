@@ -1,7 +1,8 @@
-#include "panic.h"
-#include "../renderer/basic_renderer.h"
-#include "helpers.h"
+#include "panic.hpp"
+#include "../renderer/basic_renderer.hpp"
+#include "helpers.hpp"
 
+__attribute__((noreturn))
 void Panic(const char *message)
 {
   asm ("cli");
@@ -16,6 +17,7 @@ void Panic(const char *message)
   BasicRenderer::g_Renderer.Print(message);
   
   halt();
+  while (true);
 }
 
 void __unreachable_code()

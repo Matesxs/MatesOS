@@ -1,7 +1,7 @@
 #pragma once
-#include "../utils/efiMemory.h"
+#include "../utils/efiMemory.hpp"
 #include <stdint.h>
-#include "../utils/Bitmap.h"
+#include "../utils/Bitmap.hpp"
 
 namespace memory
 {

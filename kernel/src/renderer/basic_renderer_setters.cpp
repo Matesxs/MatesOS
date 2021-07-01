@@ -1,4 +1,4 @@
-#include "basic_renderer.h"
+#include "basic_renderer.hpp"
 
 namespace BasicRenderer
 {

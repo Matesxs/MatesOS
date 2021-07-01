@@ -1,6 +1,6 @@
-#include "stat_logger.h"
-#include "../memory_management/PageFrameAllocator.h"
-#include "../memory_management/heap.h"
+#include "stat_logger.hpp"
+#include "../memory_management/PageFrameAllocator.hpp"
+#include "../memory_management/heap.hpp"
 
 void sizePrint(uint64_t size)
 {

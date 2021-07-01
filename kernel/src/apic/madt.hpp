@@ -2,10 +2,10 @@
 
 #include "stddef.h"
 #include "stdint.h"
-#include "madt_types.h"
-#include "ioapic.h"
-#include "local_apic.h"
-#include "../acpi/acpi.h"
+#include "madt_types.hpp"
+#include "ioapic.hpp"
+#include "local_apic.hpp"
+#include "../acpi/acpi.hpp"
 
 #define MADT_MAX_PROCESSORS 128
 #define MADT_MAX_IO_APICS 8

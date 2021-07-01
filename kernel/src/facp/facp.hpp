@@ -2,7 +2,7 @@
 
 #include "stddef.h"
 #include "stdint.h"
-#include "../acpi/acpi.h"
+#include "../acpi/acpi.hpp"
 
 namespace FACP
 {

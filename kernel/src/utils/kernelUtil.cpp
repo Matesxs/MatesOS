@@ -1,18 +1,20 @@
-#include "kernelUtil.h"
-#include "../memory_management/heap.h"
-#include "../renderer/basic_renderer.h"
-#include "../library/memory.h"
-#include "../library/string.h"
-#include "../IO/IO.h"
-#include "../gdt/gdt.h"
-#include "../interrupts/IDT.h"
-#include "../interrupts/interrupts.h"
-#include "../renderer/stat_logger.h"
-#include "helpers.h"
-#include "../apic/madt.h"
-#include "../facp/facp.h"
-#include "../utils/panic.h"
-#include "../cpu/features.h"
+#include "kernelUtil.hpp"
+#include "../memory_management/heap.hpp"
+#include "../renderer/basic_renderer.hpp"
+#include "../library/memory.hpp"
+#include "../library/string.hpp"
+#include "../IO/IO.hpp"
+#include "../gdt/gdt.hpp"
+#include "../interrupts/IDT.hpp"
+#include "../interrupts/interrupts.hpp"
+#include "../renderer/stat_logger.hpp"
+#include "helpers.hpp"
+#include "../apic/madt.hpp"
+#include "../facp/facp.hpp"
+#include "../utils/panic.hpp"
+#include "../cpu/features.hpp"
+
+// #define __FORCE_RSDT__
 
 void PrepareMemory(BootInfo *bootInfo)
 {
@@ -27,7 +29,7 @@ void PrepareMemory(BootInfo *bootInfo)
   memory::g_Allocator.LockPages(&_KernelStart, kernelPages);
 
   memory::PageTable *PML4 = (memory::PageTable*)memory::g_Allocator.RequestPage();
-  if (PML4 == NULL) Panic("Failed to alocate PML4 memory page");
+  if (PML4 == NULL) return Panic("Failed to alocate PML4 memory page");
   memset(PML4, 0, 0x1000);
 
   memory::g_PageTableManager = memory::PageTableManager(PML4);
@@ -81,59 +83,67 @@ void PrepareInterrupts()
   statNewLine();
 }
 
-void InitAPIC(ACPI::SDTHeader *xsdt)
+void InitAPIC(ACPI::MADTHeader *madt)
 {
-  if (!CPU::feature::APIC()) Panic("APIC not supported");
-
-  ACPI::MADTHeader *madt = (ACPI::MADTHeader*)ACPI::FindTable(xsdt, (char*)"APIC");
-  if (madt == nullptr) Panic("MADT Table not found - no APIC support!");
-  else
-  {
-    showSuccess("MADT Table found");
-    if (!APIC::MADTInit(madt)) return;
-    // io_apic_enable();
-  }
+  if (!APIC::MADTInit(madt)) return;
+  // io_apic_enable();
+  // io_pic_disable()
 }
 
 void PrepareACPI(BootInfo *bootInfo)
 {
-  ACPI::SDTHeader *xsdt = (ACPI::SDTHeader*)(bootInfo->rsdp->XSDTAddress);
-  if (xsdt == nullptr)
-  {
-    Panic("XSDT Table (ACPI) not found");
-  }
-  else showSuccess("XSDT Table (ACPI) found");
+  ACPI::RSDP2 *rsdp = (ACPI::RSDP2*)bootInfo->rsdp;
+  if (rsdp == nullptr) return Panic("RSDP header not found");
+  showInfo("RSDP Header found");
+  printStatsSpacing();
+  printStats("Revision: ");
+  printStats(to_string((uint64_t)rsdp->Revision));
+  statNewLine();
 
-  // Enumerate all headers in ACPI
-  if (!ACPI::EnumACPI(xsdt))
-  {
-    Panic("No ACPI headers found");
-    return;
-  }
+  ACPI::SDTHeader *rootHeader;
+  void *(*FindTable)(ACPI::SDTHeader*, char*);
 
-  ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader*)ACPI::FindTable(xsdt, (char*)"MCFG");
-  if (mcfg == nullptr)
+#ifdef __FORCE_RSDT__
+  showInfo("Using RSDT");
+  rootHeader = (ACPI::SDTHeader*)(uint64_t)(bootInfo->rsdp->RSDTAddress);
+  FindTable = &ACPI::FindRSDTTable;
+
+  ACPI::EnumRSDT(rootHeader);
+#else
+  if (rsdp->Revision >= 2)
   {
-    showWarning("MCFG Table not found - skipping initialization of PCI driver");
+    // XSDT available
+    showInfo("Using XSDT");
+    rootHeader = (ACPI::SDTHeader*)(bootInfo->rsdp->XSDTAddress);
+    FindTable = &ACPI::FindXSDTTable;
+
+    ACPI::EnumXSDT(rootHeader);
   }
   else
   {
-    showSuccess("MCFG Table found");
-    PCI::EnumeratePCI(mcfg);
-  }
+    // XSDT not available
+    showInfo("Using RSDT");
+    rootHeader = (ACPI::SDTHeader*)(uint64_t)(bootInfo->rsdp->RSDTAddress);
+    FindTable = &ACPI::FindRSDTTable;
 
-  ACPI::FACPHeader *facp = (ACPI::FACPHeader*)ACPI::FindTable(xsdt, (char*)"FACP");
-  if (facp == nullptr)
-  {
-    Panic("FACP Table not found");
+    ACPI::EnumRSDT(rootHeader);
   }
-  else
-  {
-    showSuccess("FACP Table found");
-    FACP::InitFACP(facp);
-  }
+#endif
 
-  InitAPIC(xsdt);
+  if (rootHeader == nullptr) return Panic("Root ACPI header not found");
+
+  ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader*)FindTable(rootHeader, (char*)"MCFG");
+  if (mcfg == nullptr) showWarning("MCFG Table not found - skipping initialization of PCI driver");
+  else PCI::EnumeratePCI(mcfg);
+
+  ACPI::FACPHeader *facp = (ACPI::FACPHeader*)FindTable(rootHeader, (char*)"FACP");
+  if (facp == nullptr) return Panic("FACP Table not found");
+  FACP::InitFACP(facp);
+
+  if (!CPU::feature::APIC()) return Panic("APIC not supported");
+  ACPI::MADTHeader *madt = (ACPI::MADTHeader*)FindTable(rootHeader, (char*)"APIC");
+  if (madt == nullptr) return Panic("MADT Table not found - no APIC support!");
+  InitAPIC(madt);
 }
 
 void printCPUInfo()

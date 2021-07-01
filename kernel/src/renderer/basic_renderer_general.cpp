@@ -1,5 +1,5 @@
-#include "basic_renderer.h"
-#include "../library/memory.h"
+#include "basic_renderer.hpp"
+#include "../library/memory.hpp"
 
 namespace BasicRenderer
 {

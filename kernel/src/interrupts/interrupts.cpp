@@ -1,9 +1,9 @@
-#include "interrupts.h"
-#include "../utils/panic.h"
-#include "../IO/IO.h"
-#include "../userinput/keyboard.h"
-#include "../scheduling/pit/pit.h"
-#include "../userinput/mouse.h"
+#include "interrupts.hpp"
+#include "../utils/panic.hpp"
+#include "../IO/IO.hpp"
+#include "../userinput/keyboard.hpp"
+#include "../scheduling/pit/pit.hpp"
+#include "../userinput/mouse.hpp"
 
 __attribute__((interrupt)) void PageFault_Handler(interrupt_frame *frame)
 {

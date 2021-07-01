@@ -1,4 +1,4 @@
-#include "strcmp.h"
+#include "strcmp.hpp"
 
 int strcmp(const char *l, const char *r)
 {

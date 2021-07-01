@@ -1,9 +1,9 @@
-#include "heap.h"
-#include "PageTableManager.h"
-#include "PageFrameAllocator.h"
-#include "../library/memory.h"
-#include "../utils/panic.h"
-#include "../renderer/stat_logger.h"
+#include "heap.hpp"
+#include "PageTableManager.hpp"
+#include "PageFrameAllocator.hpp"
+#include "../library/memory.hpp"
+#include "../utils/panic.hpp"
+#include "../renderer/stat_logger.hpp"
 
 namespace memory
 {

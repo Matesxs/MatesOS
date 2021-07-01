@@ -1,9 +1,9 @@
 #include <stdint.h>
 #include <stddef.h>
-#include "PageTableManager.h"
-#include "PageMapIndexer.h"
-#include "PageFrameAllocator.h"
-#include "../library/memory.h"
+#include "PageTableManager.hpp"
+#include "PageMapIndexer.hpp"
+#include "PageFrameAllocator.hpp"
+#include "../library/memory.hpp"
 
 #define ROUND_UP(n, multiple)	((n) % (multiple) == 0 ? (n) : (n) - (n) % (multiple) + (multiple))
 
