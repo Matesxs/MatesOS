@@ -1,4 +1,4 @@
-#include "ioapic.hpp"
+#include "madt.hpp"
 
 namespace APIC
 {

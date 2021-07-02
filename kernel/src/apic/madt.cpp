@@ -37,7 +37,6 @@ namespace APIC
         case MADT_TYPE_LOCAL_PROCESSOR:
         {
           MADTLocalProcessor *localProcessor = (MADTLocalProcessor*)header;
-
           s_madt_info.processors[s_madt_info.processors_num].local_processor = localProcessor;
           s_madt_info.processors_num++;
           break;
@@ -59,8 +58,8 @@ namespace APIC
         {
           MADTInterruptSourceOverride* iso = (MADTInterruptSourceOverride*)header;
           s_madt_info.isos[s_madt_info.isos_num] = iso;
-				  s_madt_info.isos_num++;
-				  break;
+          s_madt_info.isos_num++;
+          break;
         }
 
         case MADT_TYPE_NONMASKABLE_INTERRUPT:
@@ -86,6 +85,15 @@ namespace APIC
           printStats("New address: 0x");
           printStats(to_hstring(local_apic_override->local_apic_address));
           statNewLine();
+          break;
+        }
+
+        default:
+        {
+          showWarning("Found unknown MADT header");
+          printStatsSpacing();
+          printStats("Type: ");
+          printStats(to_string((uint64_t)header->type));
           break;
         }
       }

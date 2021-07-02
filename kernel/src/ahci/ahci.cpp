@@ -26,7 +26,7 @@ namespace AHCI
   {
     uint32_t sataStatus = port->sataStatus;
 
-    uint8_t interfacePowerManagement = (sataStatus >> 8) & 0b111;
+    uint8_t interfacePowerManagement = (sataStatus >> 8) % 0b111;
     uint8_t deviceDetection = sataStatus & 0b111;
 
     if (deviceDetection != HBA_PORT_DEV_PRESENT)
